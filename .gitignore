@@ -1,1 +1,9 @@
 .codex/
+.next/
+node_modules/
+.pnpm-store/
+out/
+dist/
+*.tsbuildinfo
+.env
+.env*.local
