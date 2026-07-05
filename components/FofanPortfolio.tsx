@@ -126,7 +126,7 @@ export function FofanPortfolio({
             <div className="glass-shell relative overflow-hidden rounded-[28px] p-2 sm:rounded-[34px]">
               <div className="relative aspect-[1.18/1] overflow-hidden rounded-[22px] bg-zinc-950 sm:rounded-[28px]">
                 <Image
-                  src="/hero/fofan-hero.png"
+                  src="/hero/fofan-hero.webp"
                   alt={t.hero.imageAlt}
                   fill
                   priority

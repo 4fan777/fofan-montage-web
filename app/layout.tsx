@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/hero/fofan-hero.png",
+        url: "/hero/fofan-hero.webp",
         width: 1536,
         height: 1024,
         alt: "Fofan montage cinematic editing scene",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Fofan montage",
     description:
       "Cinematic video editing for YouTube, Reels, Shorts and dynamic content.",
-    images: ["/hero/fofan-hero.png"],
+    images: ["/hero/fofan-hero.webp"],
   },
 };
 
