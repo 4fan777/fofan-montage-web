@@ -229,11 +229,23 @@ function Header({
   setTheme: (theme: Theme) => void;
   t: (typeof translations)[Language];
 }) {
+  function scrollToSection(
+    event: MouseEvent<HTMLAnchorElement>,
+    selector: string,
+  ) {
+    event.preventDefault();
+    document.querySelector(selector)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 py-4 sm:px-6">
       <nav className="glass-shell mx-auto flex h-16 max-w-7xl items-center justify-between rounded-full px-4 sm:px-5">
         <a
           href="#"
+          onClick={(event) => scrollToSection(event, "main")}
           className="group inline-flex min-w-0 items-center text-base font-semibold tracking-[-0.04em] text-white sm:text-lg"
           aria-label="Fofan montage"
         >
@@ -244,10 +256,18 @@ function Header({
 
         <div className="flex items-center gap-2 sm:gap-5">
           <div className="flex items-center gap-3 text-xs text-zinc-300 sm:gap-5 sm:text-sm">
-            <a className="transition-colors hover:text-white" href="#works">
+            <a
+              className="transition-colors duration-500 hover:text-white"
+              href="#works"
+              onClick={(event) => scrollToSection(event, "#works")}
+            >
               {t.nav.works}
             </a>
-            <a className="transition-colors hover:text-white" href="#contact">
+            <a
+              className="transition-colors duration-500 hover:text-white"
+              href="#contact"
+              onClick={(event) => scrollToSection(event, "#contact")}
+            >
               {t.nav.contact}
             </a>
           </div>
@@ -446,9 +466,10 @@ function ActionLink({
       rel={resolvedHref ? "noreferrer" : undefined}
       aria-disabled={disabled}
       title={disabled ? unavailableLabel : undefined}
-      whileHover={disabled ? undefined : { y: -2 }}
-      whileTap={disabled ? undefined : { scale: 0.98 }}
-      className={`${className} inline-flex min-h-12 w-full items-center justify-center whitespace-nowrap rounded-full border px-6 py-3 text-sm font-semibold transition-colors sm:w-auto ${toneClass} ${
+      whileHover={disabled ? undefined : { scale: 1.015 }}
+      whileTap={disabled ? undefined : { scale: 0.99 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className={`${className} inline-flex min-h-12 w-full items-center justify-center whitespace-nowrap rounded-full border px-6 py-3 text-sm font-semibold transition-[background-color,border-color,box-shadow,color,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-auto ${toneClass} ${
         disabled ? "cursor-not-allowed opacity-70" : ""
       }`}
     >
