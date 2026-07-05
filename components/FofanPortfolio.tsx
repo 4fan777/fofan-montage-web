@@ -229,15 +229,54 @@ function Header({
   setTheme: (theme: Theme) => void;
   t: (typeof translations)[Language];
 }) {
+  function easeInOutCubic(progress: number) {
+    return progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+  }
+
   function scrollToSection(
     event: MouseEvent<HTMLAnchorElement>,
     selector: string,
   ) {
     event.preventDefault();
-    document.querySelector(selector)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+
+    const target = document.querySelector(selector);
+
+    if (!target) {
+      return;
+    }
+
+    const shouldReduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const headerOffset = 88;
+    const startY = window.scrollY;
+    const targetY =
+      target.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+    if (shouldReduceMotion) {
+      window.scrollTo(0, targetY);
+      return;
+    }
+
+    const distance = targetY - startY;
+    const duration = 1100;
+    const startTime = performance.now();
+
+    function step(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+
+      window.scrollTo(0, startY + distance * eased);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
   }
 
   return (
