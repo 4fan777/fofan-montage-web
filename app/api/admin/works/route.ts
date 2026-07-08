@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabase-admin";
 import type { WorkFrame, WorkInput, WorkKind } from "@/lib/work-types";
 
+export const dynamic = "force-dynamic";
+
 type AdminAction =
   | {
       action: "list";
@@ -96,13 +98,14 @@ function serverError(error: unknown) {
       : typeof error === "string"
         ? error
         : "Unknown server error.";
+  const normalizedMessage = message.toLowerCase();
+  const isSupabaseConnectionError = normalizedMessage.includes("fetch failed");
 
   return NextResponse.json(
     {
-      error:
-        message === "fetch failed"
-          ? "Supabase request failed. Check SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and that the works table exists."
-          : message,
+      error: isSupabaseConnectionError
+        ? "Не удалось подключиться к Supabase. Проверь в Vercel переменную SUPABASE_URL: там должна быть ссылка вида https://xjoafzxpaieqedywxnaf.supabase.co без /rest/v1/. Также проверь SUPABASE_SERVICE_ROLE_KEY и что таблица works создана."
+        : message,
     },
     { status: 500 },
   );
