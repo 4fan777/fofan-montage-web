@@ -34,6 +34,10 @@ export async function getPublishedWorks(): Promise<SiteWorkItem[]> {
       return fallbackWorks;
     }
 
+    if (!data.length) {
+      return fallbackWorks;
+    }
+
     return data.map(mapRowToSiteWork);
   } catch (error) {
     console.error(

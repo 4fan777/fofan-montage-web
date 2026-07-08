@@ -13,14 +13,14 @@ export const works: SiteWorkItem[] = [
     frame: "9:16",
   },
   {
-    id: "youtube-opener",
+    id: "youtube-dynamic",
     kind: "youtube",
     title: {
-      ru: "YouTube интро",
-      en: "YouTube opener",
+      ru: "Динамичный ролик",
+      en: "High-energy video",
     },
     // Replace with the real YouTube URL.
-    href: "",
+    href: "https://youtu.be/0zrMf91LuFU?si=SlINwr0fQ6AT1tHG",
     frame: "16:9",
   },
   {
@@ -35,14 +35,14 @@ export const works: SiteWorkItem[] = [
     frame: "16:9",
   },
   {
-    id: "youtube-dynamic",
+    id: "youtube-opener",
     kind: "youtube",
     title: {
-      ru: "Динамичный ролик",
-      en: "High-energy video",
+      ru: "YouTube интро",
+      en: "YouTube opener",
     },
     // Replace with the real YouTube URL.
-    href: "https://youtu.be/0zrMf91LuFU?si=SlINwr0fQ6AT1tHG",
+    href: "",
     frame: "16:9",
   },
 ];

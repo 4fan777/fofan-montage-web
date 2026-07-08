@@ -35,6 +35,49 @@ const itemVariants = {
   },
 };
 
+function getYouTubeVideoId(href: string) {
+  const url = href.trim();
+
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "");
+
+    if (hostname === "youtu.be") {
+      return parsed.pathname.split("/").filter(Boolean)[0] || null;
+    }
+
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      if (parsed.pathname === "/watch") {
+        return parsed.searchParams.get("v");
+      }
+
+      const [kind, videoId] = parsed.pathname.split("/").filter(Boolean);
+
+      if (["shorts", "embed", "live"].includes(kind)) {
+        return videoId || null;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function getVideoThumbnailUrl(work: SiteWorkItem) {
+  if (work.kind !== "youtube") {
+    return null;
+  }
+
+  const videoId = getYouTubeVideoId(work.href);
+
+  return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
+}
+
 export function FofanPortfolio({
   initialWorks,
 }: {
@@ -382,6 +425,7 @@ function WorkCard({
 }) {
   const shouldReduceMotion = useReducedMotion();
   const href = work.href.trim();
+  const thumbnailUrl = getVideoThumbnailUrl(work);
   const isVertical = work.frame === "9:16";
   const layoutClass =
     index === 0
@@ -413,6 +457,8 @@ function WorkCard({
         <PreviewPlaceholder
           frame={work.frame}
           previewLabel={previewLabel}
+          thumbnailUrl={thumbnailUrl}
+          title={work.title[language]}
           vertical={isVertical}
         />
       </div>
@@ -440,15 +486,34 @@ function WorkCard({
 function PreviewPlaceholder({
   frame,
   previewLabel,
+  thumbnailUrl,
+  title,
   vertical,
 }: {
   frame: string;
   previewLabel: string;
+  thumbnailUrl: string | null;
+  title: string;
   vertical: boolean;
 }) {
   return (
     <div className="absolute inset-0 isolate overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_48%,rgba(227,39,45,0.28),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.01))]" />
+      {thumbnailUrl ? (
+        <Image
+          src={thumbnailUrl}
+          alt={title}
+          fill
+          sizes={vertical ? "(max-width: 1024px) 100vw, 36vw" : "(max-width: 1024px) 100vw, 50vw"}
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+        />
+      ) : null}
+      <div
+        className={`absolute inset-0 ${
+          thumbnailUrl
+            ? "bg-[radial-gradient(circle_at_50%_48%,rgba(227,39,45,0.12),transparent_35%),linear-gradient(180deg,rgba(5,5,6,0.16),rgba(5,5,6,0.72))]"
+            : "bg-[radial-gradient(circle_at_52%_48%,rgba(227,39,45,0.28),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.01))]"
+        }`}
+      />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.045)_1px,transparent_1px)] [background-size:44px_44px]" />
       <div className="absolute inset-x-5 top-5 flex items-center justify-between font-mono text-xs text-zinc-400">
         <span>{previewLabel}</span>
