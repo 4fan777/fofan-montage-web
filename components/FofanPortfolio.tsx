@@ -427,6 +427,9 @@ function WorkCard({
   const href = work.href.trim();
   const thumbnailUrl = getVideoThumbnailUrl(work);
   const isVertical = work.frame === "9:16";
+  const previewClassName = `relative block overflow-hidden rounded-[22px] bg-fofan-panel ${
+    isVertical ? "aspect-[9/16]" : compact ? "aspect-[16/10]" : "aspect-video"
+  }`;
   const layoutClass =
     index === 0
       ? "lg:col-span-5 lg:row-span-2"
@@ -449,11 +452,24 @@ function WorkCard({
       }
       className={`${layoutClass} group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.035] p-2 transition-colors hover:border-fofan-red/55`}
     >
-      <div
-        className={`relative overflow-hidden rounded-[22px] bg-fofan-panel ${
-          isVertical ? "aspect-[9/16]" : compact ? "aspect-[16/10]" : "aspect-video"
-        }`}
-      >
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${watchLabel}: ${work.title[language]}`}
+          className={previewClassName}
+        >
+          <PreviewPlaceholder
+            frame={work.frame}
+            previewLabel={previewLabel}
+            thumbnailUrl={thumbnailUrl}
+            title={work.title[language]}
+            vertical={isVertical}
+          />
+        </a>
+      ) : (
+        <div className={previewClassName}>
         <PreviewPlaceholder
           frame={work.frame}
           previewLabel={previewLabel}
@@ -461,7 +477,8 @@ function WorkCard({
           title={work.title[language]}
           vertical={isVertical}
         />
-      </div>
+        </div>
+      )}
 
       <div className="px-3 pb-4 pt-5 sm:px-4">
         <div className="flex items-center justify-between gap-4">

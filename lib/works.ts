@@ -15,6 +15,23 @@ function mapRowToSiteWork(row: WorkRow): SiteWorkItem {
   };
 }
 
+function mergeWithFallbackWorks(databaseWorks: SiteWorkItem[]) {
+  const databaseLinks = new Set(
+    databaseWorks
+      .map((work) => work.href.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  const linkedDatabaseWorks = databaseWorks.filter((work) => work.href.trim());
+  const emptyDatabaseWorks = databaseWorks.filter((work) => !work.href.trim());
+  const missingFallbackWorks = fallbackWorks.filter((work) => {
+    const fallbackLink = work.href.trim().toLowerCase();
+
+    return !fallbackLink || !databaseLinks.has(fallbackLink);
+  });
+
+  return [...linkedDatabaseWorks, ...missingFallbackWorks, ...emptyDatabaseWorks];
+}
+
 export async function getPublishedWorks(): Promise<SiteWorkItem[]> {
   if (!hasSupabaseAdminConfig()) {
     return fallbackWorks;
@@ -34,11 +51,7 @@ export async function getPublishedWorks(): Promise<SiteWorkItem[]> {
       return fallbackWorks;
     }
 
-    if (!data.length) {
-      return fallbackWorks;
-    }
-
-    return data.map(mapRowToSiteWork);
+    return mergeWithFallbackWorks(data.map(mapRowToSiteWork));
   } catch (error) {
     console.error(
       "Failed to connect to Supabase works:",
