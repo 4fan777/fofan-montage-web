@@ -193,7 +193,7 @@ export function FofanPortfolio({
             initial={false}
             whileInView="visible"
             viewport={{ once: true, amount: 0.18 }}
-            className="mt-12 grid gap-5 lg:grid-cols-12 lg:gap-6"
+            className="mt-12 grid gap-5 !opacity-100 !transform-none lg:grid-cols-12 lg:gap-6"
           >
             {initialWorks.map((work, index) => (
               <WorkCard
@@ -450,7 +450,7 @@ function WorkCard({
               transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
             }
       }
-      className={`${layoutClass} group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.035] p-2 transition-colors hover:border-fofan-red/55`}
+      className={`${layoutClass} group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.035] p-2 !opacity-100 !transform-none transition-colors hover:border-fofan-red/55`}
     >
       {href ? (
         <a
