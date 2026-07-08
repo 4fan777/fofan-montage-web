@@ -89,6 +89,25 @@ function validateWorkInput(value: unknown): WorkInput | null {
   };
 }
 
+function serverError(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "Unknown server error.";
+
+  return NextResponse.json(
+    {
+      error:
+        message === "fetch failed"
+          ? "Supabase request failed. Check SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and that the works table exists."
+          : message,
+    },
+    { status: 500 },
+  );
+}
+
 export async function POST(request: Request) {
   let payload: unknown;
 
@@ -109,20 +128,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = getSupabaseAdmin();
+  let supabase: ReturnType<typeof getSupabaseAdmin>;
+
+  try {
+    supabase = getSupabaseAdmin();
+  } catch (error) {
+    return serverError(error);
+  }
 
   if (payload.action === "list") {
-    const { data, error } = await supabase
-      .from("works")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("works")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      if (error) {
+        return serverError(error.message);
+      }
+
+      return NextResponse.json({ works: data });
+    } catch (error) {
+      return serverError(error);
     }
-
-    return NextResponse.json({ works: data });
   }
 
   if (payload.action === "create") {
@@ -132,17 +161,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid work data." }, { status: 400 });
     }
 
-    const { data, error } = await supabase
-      .from("works")
-      .insert(work)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("works")
+        .insert(work)
+        .select()
+        .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      if (error) {
+        return serverError(error.message);
+      }
+
+      return NextResponse.json({ work: data });
+    } catch (error) {
+      return serverError(error);
     }
-
-    return NextResponse.json({ work: data });
   }
 
   if (payload.action === "update") {
@@ -152,18 +185,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid work data." }, { status: 400 });
     }
 
-    const { data, error } = await supabase
-      .from("works")
-      .update({ ...work, updated_at: new Date().toISOString() })
-      .eq("id", payload.id)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("works")
+        .update({ ...work, updated_at: new Date().toISOString() })
+        .eq("id", payload.id)
+        .select()
+        .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      if (error) {
+        return serverError(error.message);
+      }
+
+      return NextResponse.json({ work: data });
+    } catch (error) {
+      return serverError(error);
     }
-
-    return NextResponse.json({ work: data });
   }
 
   if (payload.action === "delete") {
@@ -171,13 +208,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid work id." }, { status: 400 });
     }
 
-    const { error } = await supabase.from("works").delete().eq("id", payload.id);
+    try {
+      const { error } = await supabase
+        .from("works")
+        .delete()
+        .eq("id", payload.id);
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      if (error) {
+        return serverError(error.message);
+      }
+
+      return NextResponse.json({ ok: true });
+    } catch (error) {
+      return serverError(error);
     }
-
-    return NextResponse.json({ ok: true });
   }
 
   return unauthorized();

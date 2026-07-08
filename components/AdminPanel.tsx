@@ -41,19 +41,29 @@ export function AdminPanel({
   );
 
   async function requestAdmin(body: Record<string, unknown>) {
-    const response = await fetch("/api/admin/works", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        accessKey,
-        password,
-        ...body,
-      }),
-    });
+    let response: Response;
 
-    const result = (await response.json()) as {
+    try {
+      response = await fetch("/api/admin/works", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accessKey,
+          password,
+          ...body,
+        }),
+      });
+    } catch {
+      throw new Error(
+        "Не удалось подключиться к API админки. Обнови страницу и проверь, что сайт уже redeploy после переменных Vercel.",
+      );
+    }
+
+    const result = (await response.json().catch(() => ({
+      error: `Admin API returned ${response.status}.`,
+    }))) as {
       works?: WorkRow[];
       work?: WorkRow;
       ok?: boolean;
