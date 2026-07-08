@@ -42,7 +42,7 @@ export const works: SiteWorkItem[] = [
       en: "High-energy video",
     },
     // Replace with the real YouTube URL.
-    href: "",
+    href: "https://youtu.be/0zrMf91LuFU?si=SlINwr0fQ6AT1tHG",
     frame: "16:9",
   },
 ];

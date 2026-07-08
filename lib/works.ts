@@ -20,18 +20,26 @@ export async function getPublishedWorks(): Promise<SiteWorkItem[]> {
     return fallbackWorks;
   }
 
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("works")
-    .select("*")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase
+      .from("works")
+      .select("*")
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Failed to fetch published works:", error.message);
+    if (error) {
+      console.error("Failed to fetch published works:", error.message);
+      return fallbackWorks;
+    }
+
+    return data.map(mapRowToSiteWork);
+  } catch (error) {
+    console.error(
+      "Failed to connect to Supabase works:",
+      error instanceof Error ? error.message : error,
+    );
     return fallbackWorks;
   }
-
-  return data.map(mapRowToSiteWork);
 }
