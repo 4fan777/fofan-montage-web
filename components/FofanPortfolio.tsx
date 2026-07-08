@@ -190,7 +190,7 @@ export function FofanPortfolio({
 
           <motion.div
             variants={shouldReduceMotion ? undefined : containerVariants}
-            initial={shouldReduceMotion ? false : "hidden"}
+            initial={false}
             whileInView="visible"
             viewport={{ once: true, amount: 0.18 }}
             className="mt-12 grid gap-5 lg:grid-cols-12 lg:gap-6"
