@@ -4,7 +4,7 @@ export const heroLinks = {
   // Replace with the real Fofan web Telegram channel URL.
   fofanWeb: "https://t.me/webfofan",
   // Replace with the real YouTube channel URL.
-  youtube: "https://www.youtube.com/@fofan63",
+  youtube: "https://www.youtube.com/@Fofan.montage",
 } as const;
 
 export const contactLinks = {
