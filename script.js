@@ -1,288 +1,182 @@
-const defaultWorks = [
-  {
-    id: "work-1",
-    index: "Case 01",
-    title: "Example 1",
-    description: "Избранный пример монтажа.",
-    videoUrl: "IMG_5112.MP4",
-    placeholderText: "",
-    previewImage: "case-1-preview-fit.png",
-    previewPosition: "center",
-    playOnHover: true
-  },
-  {
-    id: "work-2",
-    index: "Case 02",
-    title: "Example 2",
-    description: "Избранный пример монтажа.",
-    videoUrl: "ramz money.mp4",
-    placeholderText: "",
-    previewImage: "works-preview-fit.png",
-    previewPosition: "center",
-    playOnHover: true
-  },
-  {
-    id: "work-3",
-    index: "Case 03",
-    title: "FofanWorld",
-    description: "Больше примеров работ ищите у меня в телеграмм канале FofanWorld.",
-    videoUrl: "",
-    placeholderText: "",
-    previewImage: "case-3-preview.png",
-    previewPosition: "center",
-    playOnHover: false
-  }
-];
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fofan montage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas class="liquid-chrome-bg" id="liquidChromeBg" aria-hidden="true"></canvas>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero__masthead">
+        <p class="hero__eyebrow">Fofan montage</p>
+        <div class="hero__signature">
+          <span>EDITORIAL CUTS</span>
+          <span>MOTION RHYTHM</span>
+          <span>STUNT ENERGY</span>
+        </div>
+      </div>
 
-const worksGrid = document.getElementById("worksGrid");
-const template = document.getElementById("workCardTemplate");
+      <div class="hero__content">
+        <div class="hero__copy">
+          <h1 class="hero__title">
+            <span>portfolio by</span>
+            <span>FOFAN</span>
+          </h1>
+          <p class="hero__lead">
+            Портфолио видеомонтажера с акцентом на динамику, чистую подачу и уверенный визуальный ритм.
+          </p>
+          <div class="hero__actions">
+            <a href="#works" class="button button--primary">Смотреть работы</a>
+            <a href="#about" class="button button--ghost">Обо мне</a>
+          </div>
+        </div>
 
-function setVideoState(videoElement, placeholderElement, videoUrl) {
-  if (videoUrl) {
-    videoElement.src = videoUrl;
-    videoElement.style.display = "block";
-    placeholderElement.style.display = "none";
-    return;
-  }
+        <aside class="hero__panel">
+          <div class="hero__panel-top">
+            <span>Based on precision</span>
+            <span>Cut for impact</span>
+          </div>
+          <div class="hero__panel-body">
+            <p>Связь</p>
+            <strong class="hero__contact">
+              <span class="hero__telegram-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path d="M20.7 4.3 3.8 10.8c-1.2.5-1.2 1.2-.2 1.5l4.3 1.3 1.7 5.3c.2.6.1.8.8.8.5 0 .7-.2 1-.5l2.4-2.3 5 3.7c.9.5 1.5.2 1.7-.8l2.9-13.7c.3-1.3-.5-1.9-1.9-1.3Z" fill="currentColor"/>
+                </svg>
+              </span>
+              <span>dwayne633</span>
+            </strong>
+          </div>
+          <div class="hero__panel-body">
+            <p>Фокус</p>
+            <strong>Short-form / reels / promo / gaming / mood edit</strong>
+          </div>
+        </aside>
+      </div>
+    </header>
 
-  videoElement.removeAttribute("src");
-  videoElement.load();
-  videoElement.style.display = "none";
-  placeholderElement.style.display = "grid";
-}
+    <main>
+      <section class="section" id="works">
+        <div class="section__heading">
+          <div>
+            <h2>Избранные работы</h2>
+            <p>Selected edits</p>
+          </div>
+        </div>
 
-function renderWorks() {
-  worksGrid.innerHTML = "";
+        <div class="works-grid" id="worksGrid"></div>
+      </section>
 
-  defaultWorks.forEach((work, cardIndex) => {
-    const fragment = template.content.cloneNode(true);
-    const card = fragment.querySelector(".work-card");
-    const media = fragment.querySelector(".work-card__media");
-    const video = fragment.querySelector(".work-card__video");
-    const placeholder = fragment.querySelector(".work-card__placeholder");
-    const placeholderText = fragment.querySelector(".work-card__placeholder span");
-    const index = fragment.querySelector(".work-card__index");
-    const title = fragment.querySelector(".work-card__title");
-    const description = fragment.querySelector(".work-card__description");
+      <section class="section" id="prices">
+        <div class="section__heading">
+          <div>
+            <h2>Прайс</h2>
+            <p>Editing rates</p>
+          </div>
+        </div>
 
-    card.dataset.workId = work.id;
-    index.textContent = work.index || `Case ${String(cardIndex + 1).padStart(2, "0")}`;
-    title.textContent = work.title;
-    description.textContent = work.description;
-    placeholderText.textContent = work.placeholderText || "";
-    card.classList.toggle("work-card--hover-video", Boolean(work.playOnHover));
-    media.style.setProperty("--work-preview-image", `url("${work.previewImage || "works-preview.png"}")`);
-    media.style.setProperty("--work-preview-position", work.previewPosition || "center");
+        <div class="price-grid">
+          <article class="price-card">
+            <div class="price-card__kick" aria-hidden="true"></div>
+            <p class="price-card__label">Быстрый монтаж</p>
+            <h3>от 1490 ₽</h3>
+            <p>Короткие ролики, reels, TikTok, динамичная нарезка, музыка, базовые переходы.</p>
+          </article>
 
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.removeAttribute("controls");
+          <article class="price-card">
+            <div class="price-card__kick" aria-hidden="true"></div>
+            <p class="price-card__label">Продвинутый монтаж</p>
+            <h3>от 2490 ₽</h3>
+            <p>Рекламные ролики, YouTube, эффектные переходы, цвет, титры, работа с драматургией.</p>
+          </article>
 
-    setVideoState(video, placeholder, work.videoUrl);
+          <article class="price-card">
+            <div class="price-card__kick" aria-hidden="true"></div>
+            <p class="price-card__label">Индивидуальный проект</p>
+            <h3>по договоренности</h3>
+            <p>Нестандартные задачи, серия роликов, личный стиль проекта, плотная работа по референсам.</p>
+          </article>
+        </div>
+      </section>
 
-    if (work.playOnHover && work.videoUrl) {
-      const playVideo = async () => {
-        try {
-          video.currentTime = 0;
-          await video.play();
-          media.classList.add("is-playing");
-        } catch (error) {
-          console.warn("Hover preview play failed", error);
-        }
-      };
+      <section class="section" id="about">
+        <div class="section__heading">
+          <div>
+            <h2>О монтажере</h2>
+            <p>About the editor</p>
+          </div>
+        </div>
 
-      const stopVideo = () => {
-        video.pause();
-        video.currentTime = 0;
-        media.classList.remove("is-playing");
-      };
+        <div class="about-card about-card--nav" id="aboutCardNav">
+          <div class="about-card__column is-active" data-about-panel tabindex="0">
+            <p class="about-card__label">Позиционирование</p>
+            <h3>Fofan montage</h3>
+            <p>
+              Я собираю видео так, чтобы оно цепляло с первых секунд: через ритм, контраст, акценты и чистую структуру.
+              Мне близок монтаж с характером: уверенный, собранный и без визуального шума.
+            </p>
+          </div>
 
-      media.addEventListener("mouseenter", playVideo);
-      media.addEventListener("mouseleave", stopVideo);
-      media.addEventListener("focusin", playVideo);
-      media.addEventListener("focusout", stopVideo);
-    }
+          <div class="about-card__column" data-about-panel tabindex="0">
+            <p class="about-card__label">Что делаю</p>
+            <ul class="about-list">
+              <li>Монтаж reels, shorts и TikTok</li>
+              <li>YouTube-выпуски и промо</li>
+              <li>Синхронизация под музыку и бит</li>
+              <li>Титры, динамика, цвет, настроение</li>
+            </ul>
+          </div>
 
-    worksGrid.appendChild(fragment);
-  });
-}
+          <div class="about-card__column" data-about-panel tabindex="0">
+            <p class="about-card__label">Подход</p>
+            <p>
+              Мой монтаж работает на результат: удержать внимание, усилить эмоцию и сделать ролик таким,
+              который хочется досмотреть до конца. Я выстраиваю темп, акценты и подачу так, чтобы
+              твой контент выглядел дороже, сильнее и сразу вызывал доверие у зрителя.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 
-renderWorks();
+  <template id="workCardTemplate">
+    <article class="work-card">
+      <div class="work-card__media">
+        <div class="work-card__preview" aria-hidden="true">
+          <span class="work-card__preview-bg"></span>
+          <span class="work-card__preview-character"></span>
+        </div>
+        <div class="work-card__shape-blur" aria-hidden="true">
+          <span class="work-card__shape work-card__shape--one"></span>
+          <span class="work-card__shape work-card__shape--two"></span>
+          <span class="work-card__shape-ring"></span>
+        </div>
+        <video class="work-card__video" controls preload="metadata" playsinline></video>
+        <div class="work-card__placeholder">
+          <span>Добавь ссылку на `.mp4`, `.webm` или `.ogg`</span>
+        </div>
+      </div>
 
-const aboutCardNav = document.getElementById("aboutCardNav");
+      <div class="work-card__content">
+        <div class="work-card__head">
+          <div>
+            <p class="work-card__index"></p>
+            <h3 class="work-card__title"></h3>
+          </div>
+        </div>
 
-if (aboutCardNav) {
-  const panels = Array.from(aboutCardNav.querySelectorAll("[data-about-panel]"));
+        <p class="work-card__description"></p>
+      </div>
+    </article>
+  </template>
 
-  const setActivePanel = (activePanel) => {
-    panels.forEach((panel) => {
-      panel.classList.toggle("is-active", panel === activePanel);
-    });
-  };
-
-  panels.forEach((panel) => {
-    panel.addEventListener("mouseenter", () => setActivePanel(panel));
-    panel.addEventListener("focus", () => setActivePanel(panel));
-    panel.addEventListener("click", () => setActivePanel(panel));
-  });
-}
-
-const liquidChromeCanvas = document.getElementById("liquidChromeBg");
-
-if (liquidChromeCanvas) {
-  const gl =
-    liquidChromeCanvas.getContext("webgl", { antialias: true, alpha: true }) ||
-    liquidChromeCanvas.getContext("experimental-webgl", { antialias: true, alpha: true });
-
-  if (gl) {
-    const vertexShaderSource = `
-      attribute vec2 position;
-      attribute vec2 uv;
-      varying vec2 vUv;
-
-      void main() {
-        vUv = uv;
-        gl_Position = vec4(position, 0.0, 1.0);
-      }
-    `;
-
-    const fragmentShaderSource = `
-      precision highp float;
-
-      uniform float uTime;
-      uniform vec3 uResolution;
-      uniform vec3 uBaseColor;
-      uniform float uAmplitude;
-      uniform float uFrequencyX;
-      uniform float uFrequencyY;
-      uniform vec2 uMouse;
-      varying vec2 vUv;
-
-      vec4 renderImage(vec2 uvCoord) {
-        vec2 fragCoord = uvCoord * uResolution.xy;
-        vec2 uv = (2.0 * fragCoord - uResolution.xy) / min(uResolution.x, uResolution.y);
-
-        for (float i = 1.0; i < 10.0; i++) {
-          uv.x += uAmplitude / i * cos(i * uFrequencyX * uv.y + uTime + uMouse.x * 3.14159);
-          uv.y += uAmplitude / i * cos(i * uFrequencyY * uv.x + uTime + uMouse.y * 3.14159);
-        }
-
-        vec2 diff = uvCoord - uMouse;
-        float dist = length(diff);
-        float falloff = exp(-dist * 20.0);
-        float ripple = sin(10.0 * dist - uTime * 2.0) * 0.03;
-        uv += (diff / (dist + 0.0001)) * ripple * falloff;
-
-        vec3 color = uBaseColor / abs(sin(uTime - uv.y - uv.x));
-        color = clamp(color, 0.0, 1.0);
-        return vec4(color, 1.0);
-      }
-
-      void main() {
-        gl_FragColor = renderImage(vUv);
-      }
-    `;
-
-    const compileShader = (type, source) => {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.warn(gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
-        return null;
-      }
-
-      return shader;
-    };
-
-    const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-    if (vertexShader && fragmentShader) {
-      const program = gl.createProgram();
-      gl.attachShader(program, vertexShader);
-      gl.attachShader(program, fragmentShader);
-      gl.linkProgram(program);
-
-      if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        gl.useProgram(program);
-
-        const vertices = new Float32Array([
-          -1, -1, 0, 0,
-          1, -1, 1, 0,
-          -1, 1, 0, 1,
-          1, 1, 1, 1
-        ]);
-
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-        const positionLocation = gl.getAttribLocation(program, "position");
-        const uvLocation = gl.getAttribLocation(program, "uv");
-
-        gl.enableVertexAttribArray(positionLocation);
-        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 16, 0);
-        gl.enableVertexAttribArray(uvLocation);
-        gl.vertexAttribPointer(uvLocation, 2, gl.FLOAT, false, 16, 8);
-
-        const uniforms = {
-          time: gl.getUniformLocation(program, "uTime"),
-          resolution: gl.getUniformLocation(program, "uResolution"),
-          baseColor: gl.getUniformLocation(program, "uBaseColor"),
-          amplitude: gl.getUniformLocation(program, "uAmplitude"),
-          frequencyX: gl.getUniformLocation(program, "uFrequencyX"),
-          frequencyY: gl.getUniformLocation(program, "uFrequencyY"),
-          mouse: gl.getUniformLocation(program, "uMouse")
-        };
-
-        const mouse = { x: 0.5, y: 0.5 };
-
-        gl.uniform3f(uniforms.baseColor, 0.0627451, 0.0117647, 0.0117647);
-        gl.uniform1f(uniforms.amplitude, 0.3);
-        gl.uniform1f(uniforms.frequencyX, 3.0);
-        gl.uniform1f(uniforms.frequencyY, 2.6);
-
-        const resize = () => {
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          const width = Math.floor(window.innerWidth * dpr);
-          const height = Math.floor(window.innerHeight * dpr);
-
-          liquidChromeCanvas.width = width;
-          liquidChromeCanvas.height = height;
-          gl.viewport(0, 0, width, height);
-          gl.uniform3f(uniforms.resolution, width, height, width / height);
-        };
-
-        const updateMouse = (clientX, clientY) => {
-          mouse.x = clientX / window.innerWidth;
-          mouse.y = 1 - clientY / window.innerHeight;
-        };
-
-        const handleMouseMove = (event) => updateMouse(event.clientX, event.clientY);
-        const handleTouchMove = (event) => {
-          if (event.touches.length > 0) {
-            updateMouse(event.touches[0].clientX, event.touches[0].clientY);
-          }
-        };
-
-        const render = (time) => {
-          gl.uniform1f(uniforms.time, time * 0.0003);
-          gl.uniform2f(uniforms.mouse, mouse.x, mouse.y);
-          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-          window.requestAnimationFrame(render);
-        };
-
-        window.addEventListener("resize", resize);
-        window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("touchmove", handleTouchMove, { passive: true });
-
-        resize();
-        render(0);
-      }
-    }
-  }
-}
+  <script src="script.js"></script>
+</body>
+</html>
