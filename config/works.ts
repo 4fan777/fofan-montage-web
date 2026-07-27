@@ -8,8 +8,9 @@ export const works: SiteWorkItem[] = [
       ru: "Динамичный Reels монтаж",
       en: "Dynamic Reels edit",
     },
-    // Replace with the real TikTok, Reels or Shorts URL.
-    href: "",
+    // Local video file served from /public.
+    href: "/reels.mp4",
+    thumbnail: "/reels-preview.jpg",
     frame: "9:16",
   },
   {
@@ -20,7 +21,7 @@ export const works: SiteWorkItem[] = [
       en: "High-energy video",
     },
     // Replace with the real YouTube URL.
-    href: "https://youtu.be/0zrMf91LuFU?si=SlINwr0fQ6AT1tHG",
+    href: "https://youtu.be/QG-elR5MUbI?si=9FheCLqZSFC2mrCE",
     frame: "16:9",
   },
   {
@@ -42,7 +43,7 @@ export const works: SiteWorkItem[] = [
       en: "YouTube opener",
     },
     // Replace with the real YouTube URL.
-    href: "",
+    href: "https://youtu.be/gyAU_h0Wrco?si=zEseufCvzIxFlSSd",
     frame: "16:9",
   },
 ];

@@ -69,6 +69,10 @@ function getYouTubeVideoId(href: string) {
 }
 
 function getVideoThumbnailUrl(work: SiteWorkItem) {
+  if (work.thumbnail) {
+    return work.thumbnail;
+  }
+
   if (work.kind !== "youtube") {
     return null;
   }

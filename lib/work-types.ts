@@ -9,6 +9,8 @@ export type SiteWorkItem = {
   title: Record<Language, string>;
   href: string;
   frame: WorkFrame;
+  /** Optional custom preview image (e.g. a file from /public). */
+  thumbnail?: string;
 };
 
 export type WorkRow = {
