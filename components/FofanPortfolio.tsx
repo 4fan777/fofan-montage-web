@@ -206,7 +206,6 @@ export function FofanPortfolio({
                 watchLabel={t.works.watch}
                 unavailableLabel={t.works.linkPlaceholder}
                 index={index}
-                compact={index > 1}
               />
             ))}
           </m.div>
@@ -408,7 +407,6 @@ function WorkCard({
   watchLabel,
   unavailableLabel,
   index,
-  compact,
 }: {
   work: SiteWorkItem;
   language: Language;
@@ -417,14 +415,13 @@ function WorkCard({
   watchLabel: string;
   unavailableLabel: string;
   index: number;
-  compact: boolean;
 }) {
   const shouldReduceMotion = useReducedMotion();
   const href = work.href.trim();
   const thumbnailUrl = getVideoThumbnailUrl(work);
   const isVertical = work.frame === "9:16";
   const previewClassName = `relative block overflow-hidden rounded-[22px] bg-fofan-panel ${
-    isVertical ? "aspect-[9/16]" : compact ? "aspect-[16/10]" : "aspect-video"
+    isVertical ? "aspect-[9/16]" : "aspect-video"
   }`;
   const layoutClass =
     index === 0
