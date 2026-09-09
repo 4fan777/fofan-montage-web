@@ -1,23 +1,11 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
-  title: "wade montage | Video editing portfolio",
+  title: "wade montage — Дмитрий, видеомонтажёр",
   description:
-    "Premium video editing portfolio for YouTube, Reels, Shorts and dynamic social content.",
+    "Дмитрий, видеомонтажёр. Монтаж YouTube-видео, Reels и Shorts. Избранные работы и связь для заказа монтажа.",
   keywords: [
     "wade montage",
     "video editing",
@@ -30,23 +18,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "wade montage",
     description:
-      "Cinematic video editing for YouTube, Reels, Shorts and dynamic content.",
+      "Дмитрий. Монтаж YouTube-видео, Reels и Shorts.",
     type: "website",
-    images: [
-      {
-        url: "/hero/fofan-hero.webp",
-        width: 1536,
-        height: 1024,
-        alt: "wade montage cinematic editing scene",
-      },
-    ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "wade montage",
     description:
-      "Cinematic video editing for YouTube, Reels, Shorts and dynamic content.",
-    images: ["/hero/fofan-hero.webp"],
+      "Дмитрий. Монтаж YouTube-видео, Reels и Shorts.",
   },
 };
 
@@ -56,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${manrope.variable} ${jetBrainsMono.variable}`}>
+    <html lang="ru">
       <body>{children}</body>
     </html>
   );
