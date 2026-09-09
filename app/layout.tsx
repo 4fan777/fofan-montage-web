@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "Shorts editor",
     "монтаж видео",
   ],
-  metadataBase: new URL("https://fofan-montage.vercel.app"),
+  metadataBase: new URL("https://wade-montage.vercel.app"),
   openGraph: {
     title: "wade montage",
     description:
