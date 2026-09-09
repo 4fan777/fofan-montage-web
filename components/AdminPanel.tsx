@@ -159,7 +159,7 @@ export function AdminPanel({
         <header className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.36)] sm:p-8">
           <p className="font-mono text-sm text-[#ff4b50]">Hidden admin</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em]">
-            Fofan montage
+            wade montage
           </h1>
           <p className="mt-4 max-w-2xl text-zinc-300">
             Эта страница не видна на сайте. Открывай ее только по личной ссылке:

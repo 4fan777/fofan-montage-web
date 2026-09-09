@@ -6,13 +6,13 @@ export const translations = {
       language: "Язык",
     },
     hero: {
-      title: "Fofan montage",
+      title: "wade montage",
       kicker: "Портфолио видеомонтажа",
       subtitle:
         "Монтаж для YouTube, Reels, Shorts и динамичного контента, который удерживает внимание.",
       ctas: {
         telegramChannel: "Telegram Channel",
-        fofanWeb: "Fofan web",
+        fofanWeb: "wade web",
         youtube: "YouTube",
       },
       imageAlt: "Кинематографичная сцена видеомонтажа с красным светом",
@@ -40,7 +40,7 @@ export const translations = {
     common: {
       unavailableLink: "Замените ссылку в конфиге",
     },
-    footer: "© 2026 Fofan montage. All rights reserved.",
+    footer: "© 2026 wade montage. All rights reserved.",
   },
   en: {
     nav: {
@@ -49,13 +49,13 @@ export const translations = {
       language: "Language",
     },
     hero: {
-      title: "Fofan montage",
+      title: "wade montage",
       kicker: "Video editing portfolio",
       subtitle:
         "Video editing for YouTube, Reels, Shorts and dynamic content built to hold attention.",
       ctas: {
         telegramChannel: "Telegram Channel",
-        fofanWeb: "Fofan web",
+        fofanWeb: "wade web",
         youtube: "YouTube",
       },
       imageAlt: "Cinematic video editing scene with red light",
@@ -83,7 +83,7 @@ export const translations = {
     common: {
       unavailableLink: "Replace this link in the config",
     },
-    footer: "© 2026 Fofan montage. All rights reserved.",
+    footer: "© 2026 wade montage. All rights reserved.",
   },
 } as const;
 

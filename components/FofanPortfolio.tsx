@@ -113,16 +113,6 @@ export function FofanPortfolio({
     [t.hero.ctas.fofanWeb, t.hero.ctas.telegramChannel, t.hero.ctas.youtube],
   );
 
-  const contactActions = useMemo(
-    () => [
-      {
-        label: t.contact.buttons.telegramBot,
-        href: contactLinks.telegramBot,
-      },
-    ],
-    [t.contact.buttons.telegramBot],
-  );
-
   return (
     <MotionConfig reducedMotion="user">
       <main
@@ -234,15 +224,9 @@ export function FofanPortfolio({
               {t.contact.description}
             </p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
-              {contactActions.map((action) => (
-                <ActionLink
-                  key={action.label}
-                  href={action.href}
-                  label={action.label}
-                  unavailableLabel={t.common.unavailableLink}
-                  tone="primary"
-                />
-              ))}
+              <p className="text-xl font-semibold text-white">
+                {contactLinks.telegramUsername}
+              </p>
             </div>
           </motion.div>
         </section>
@@ -333,10 +317,10 @@ function Header({
           href="#"
           onClick={(event) => scrollToSection(event, "main")}
           className="group inline-flex min-w-0 items-center text-base font-semibold tracking-[-0.04em] text-white sm:text-lg"
-          aria-label="Fofan montage"
+          aria-label="wade montage"
         >
           <span className="brand-logo bg-gradient-to-r from-white via-white to-fofan-red-soft bg-clip-text text-transparent">
-            Fofan montage
+            wade montage
           </span>
         </a>
 

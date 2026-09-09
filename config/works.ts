@@ -21,7 +21,7 @@ export const works: SiteWorkItem[] = [
       en: "High-energy video",
     },
     // Replace with the real YouTube URL.
-    href: "https://youtu.be/QG-elR5MUbI?si=9FheCLqZSFC2mrCE",
+    href: "https://youtu.be/o06bDTg3rUY",
     frame: "16:9",
   },
   {
@@ -32,7 +32,7 @@ export const works: SiteWorkItem[] = [
       en: "Tutorial",
     },
     // Replace with the real YouTube URL.
-    href: "",
+    href: "https://youtu.be/OT5h_3qf9l8?si=xYYmag-xMPAtB1MO",
     frame: "16:9",
   },
   {

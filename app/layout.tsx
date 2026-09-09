@@ -15,11 +15,11 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fofan montage | Video editing portfolio",
+  title: "wade montage | Video editing portfolio",
   description:
     "Premium video editing portfolio for YouTube, Reels, Shorts and dynamic social content.",
   keywords: [
-    "Fofan montage",
+    "wade montage",
     "video editing",
     "YouTube editor",
     "Reels editor",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL("https://fofan-montage.vercel.app"),
   openGraph: {
-    title: "Fofan montage",
+    title: "wade montage",
     description:
       "Cinematic video editing for YouTube, Reels, Shorts and dynamic content.",
     type: "website",
@@ -37,13 +37,13 @@ export const metadata: Metadata = {
         url: "/hero/fofan-hero.webp",
         width: 1536,
         height: 1024,
-        alt: "Fofan montage cinematic editing scene",
+        alt: "wade montage cinematic editing scene",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fofan montage",
+    title: "wade montage",
     description:
       "Cinematic video editing for YouTube, Reels, Shorts and dynamic content.",
     images: ["/hero/fofan-hero.webp"],
