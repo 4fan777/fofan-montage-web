@@ -50,5 +50,12 @@ export function getSupabaseAdmin() {
       persistSession: false,
       autoRefreshToken: false,
     },
+    global: {
+      fetch: (input, init) =>
+        fetch(input, {
+          ...init,
+          signal: AbortSignal.timeout(4000),
+        }),
+    },
   });
 }

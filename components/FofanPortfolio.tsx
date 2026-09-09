@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import { MouseEvent, useMemo, useState } from "react";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import {
+  domAnimation,
+  LazyMotion,
+  m,
+  MotionConfig,
+  useReducedMotion,
+} from "framer-motion";
 import { contactLinks, heroLinks } from "@/config/links";
 import { translations, type Language } from "@/config/translations";
 import type { SiteWorkItem } from "@/lib/work-types";
@@ -114,17 +120,18 @@ export function FofanPortfolio({
   );
 
   return (
-    <MotionConfig reducedMotion="user">
-      <main
-        className={`relative isolate min-h-[100dvh] overflow-hidden bg-fofan-bg text-fofan-text ${
-          theme === "white" ? "theme-white" : ""
-        }`}
-      >
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">
+        <main
+          className={`relative isolate min-h-[100dvh] overflow-hidden bg-fofan-bg text-fofan-text ${
+            theme === "white" ? "theme-white" : ""
+          }`}
+        >
         <BackgroundLayer />
         <Header theme={theme} setTheme={setTheme} t={t} />
 
         <section className="relative z-10 mx-auto grid min-h-[100dvh] w-full max-w-7xl items-center gap-10 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pt-24">
-          <motion.div
+          <m.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={revealTransition}
@@ -151,9 +158,9 @@ export function FofanPortfolio({
                 />
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ ...revealTransition, delay: 0.16 }}
@@ -173,7 +180,7 @@ export function FofanPortfolio({
                 <div className="absolute inset-0 bg-gradient-to-t from-fofan-bg via-transparent to-transparent" />
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </section>
 
         <section
@@ -182,7 +189,7 @@ export function FofanPortfolio({
         >
           <SectionHeading title={t.works.title} />
 
-          <motion.div
+          <m.div
             variants={shouldReduceMotion ? undefined : containerVariants}
             initial={false}
             whileInView="visible"
@@ -202,14 +209,14 @@ export function FofanPortfolio({
                 compact={index > 1}
               />
             ))}
-          </motion.div>
+          </m.div>
         </section>
 
         <section
           id="contact"
           className="relative z-10 mx-auto w-full max-w-5xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32"
         >
-          <motion.div
+          <m.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
@@ -228,14 +235,15 @@ export function FofanPortfolio({
                 {contactLinks.telegramUsername}
               </p>
             </div>
-          </motion.div>
+          </m.div>
         </section>
 
         <footer className="relative z-10 px-4 py-10 text-center text-sm text-zinc-500">
           {t.footer}
         </footer>
-      </main>
-    </MotionConfig>
+        </main>
+      </MotionConfig>
+    </LazyMotion>
   );
 }
 
@@ -373,7 +381,7 @@ function SectionHeading({ title, body }: { title: string; body?: string }) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <motion.div
+    <m.div
       initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.35 }}
@@ -388,7 +396,7 @@ function SectionHeading({ title, body }: { title: string; body?: string }) {
           {body}
         </p>
       ) : null}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -428,7 +436,7 @@ function WorkCard({
           : "lg:col-span-3";
 
   return (
-    <motion.article
+    <m.article
       variants={shouldReduceMotion ? undefined : itemVariants}
       whileHover={
         shouldReduceMotion
@@ -484,7 +492,7 @@ function WorkCard({
           className="mt-5"
         />
       </div>
-    </motion.article>
+    </m.article>
   );
 }
 
@@ -568,7 +576,7 @@ function ActionLink({
         : "border-white/10 bg-white/[0.035] text-white hover:border-fofan-red/60 hover:bg-fofan-red/12";
 
   return (
-    <motion.a
+    <m.a
       href={resolvedHref || "#"}
       onClick={handleClick}
       target={resolvedHref ? "_blank" : undefined}
@@ -583,6 +591,6 @@ function ActionLink({
       }`}
     >
       {label}
-    </motion.a>
+    </m.a>
   );
 }
