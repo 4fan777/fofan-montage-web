@@ -1,12 +1,52 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { ArrowDown, ArrowUpRight, Film, Moon, Quote, Sun } from "lucide-react";
+import Image from "next/image";
+import { ArrowDown, ArrowUpRight, Film, Moon, Play, Quote, Sun } from "lucide-react";
 import { LazyMotion, domAnimation, m, MotionConfig } from "framer-motion";
 import { contactLinks, heroLinks } from "@/config/links";
 import { featuredWork } from "@/config/featured-work";
+import type { SiteWorkItem } from "@/lib/work-types";
 
-export function FofanPortfolio() {
+function getPreview(work: SiteWorkItem) {
+  if (work.thumbnail) return work.thumbnail;
+  try {
+    const url = new URL(work.href);
+    const host = url.hostname.replace(/^www\./, "");
+    const parts = url.pathname.split("/").filter(Boolean);
+    const id = host === "youtu.be" ? parts[0] :
+      ["youtube.com", "m.youtube.com"].includes(host) ?
+        url.searchParams.get("v") || (["shorts", "embed", "live"].includes(parts[0]) ? parts[1] : null) : null;
+    return id && /^[\w-]{11}$/.test(id) ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+  } catch {
+    return null;
+  }
+}
+
+function WorkCard({ work, index }: { work: SiteWorkItem; index: number }) {
+  const preview = getPreview(work);
+  const [failed, setFailed] = useState(false);
+  const media = <>
+    {preview && !failed ? <Image src={preview} alt={work.title.ru} fill
+      sizes={index === 0 ? "(max-width: 640px) 100vw, 42vw" : "(max-width: 640px) 100vw, (max-width: 1023px) 50vw, 60vw"}
+      className="work-image" onError={() => setFailed(true)} /> : <Film size={32} strokeWidth={1.2} />}
+    {work.href && <span className="work-play"><Play size={22} fill="currentColor" strokeWidth={0} /></span>}
+  </>;
+  return <m.article className={`work-card work-card-${Math.min(index, 4)}`}
+    initial={{ y: 8 }} whileInView={{ y: 0 }} viewport={{ once: true }}
+    transition={{ duration: 0.55, delay: Math.min(index, 3) * 0.05, ease: "easeOut" }}>
+    {work.href ? <a className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}
+      href={work.href} target="_blank" rel="noreferrer" aria-label={`Смотреть: ${work.title.ru}`}>{media}</a> :
+      <div className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}>{media}</div>}
+    <div className="work-meta"><span>{work.kind === "reels" ? "TikTok / Reels" : "YouTube"}</span><span>{work.frame}</span></div>
+    <div className="work-caption"><h3>{work.title.ru}</h3>
+      {work.href && <a className="work-open" href={work.href} target="_blank" rel="noreferrer"
+        aria-label={`Открыть: ${work.title.ru}`} title="Смотреть"><ArrowUpRight size={20} /></a>}
+    </div>
+  </m.article>;
+}
+
+export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] }) {
   const [light, setLight] = useState(false);
   const animation = useRef(0);
 
@@ -52,8 +92,6 @@ export function FofanPortfolio() {
     }
     animation.current = requestAnimationFrame(step);
   }
-
-  const hasVideo = /^[\w-]{11}$/.test(featuredWork.youtubeId);
 
   return (
     <LazyMotion features={domAnimation} strict>
@@ -107,31 +145,11 @@ export function FofanPortfolio() {
             <section className="shell works-section" id="works" aria-labelledby="works-title">
               <div className="section-heading">
                 <div><span className="section-index">01 / Портфолио</span><h2 id="works-title">Работы.</h2></div>
-                <span className="section-note">YouTube / 16:9</span>
+                <span className="section-note">YouTube / Reels</span>
               </div>
-              <m.article initial={{ y: 8 }} whileInView={{ y: 0 }} viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "easeOut" }}>
-                <div className="featured-video">
-                  {hasVideo ? (
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${featuredWork.youtubeId}`}
-                      title={featuredWork.title || "Работа — wade montage"}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="video-empty" role="status">
-                      <div className="video-corner-label" aria-hidden="true">wade montage / YouTube</div>
-                      <Film size={30} strokeWidth={1.2} aria-hidden="true" />
-                      <p>Скоро здесь будет новая работа</p>
-                      <div className="video-bottom-label" aria-hidden="true"><span>01</span><span>16:9</span></div>
-                    </div>
-                  )}
-                </div>
-                {featuredWork.title && <h3 className="work-title">{featuredWork.title}</h3>}
-                {featuredWork.description && <p className="work-description">{featuredWork.description}</p>}
-              </m.article>
+              <div className="works-grid">
+                {initialWorks.map((work, index) => <WorkCard key={work.id} work={work} index={index} />)}
+              </div>
             </section>
 
             <section className="shell reviews-section" id="reviews" aria-labelledby="reviews-title">
