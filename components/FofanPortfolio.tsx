@@ -105,7 +105,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
           <header className="site-header">
             <nav className="shell navigation" aria-label="Основная навигация">
               <a className="wordmark" href="#top" onClick={e => scrollTo(e, "top")}>
-                <span className="nav-monogram">w.</span><span className="nav-brand">wade montage</span>
+                <span className="nav-brand">wade montage</span>
               </a>
               <div className="nav-actions">
                 <a className="nav-link about-nav" href="#top" onClick={e => scrollTo(e, "top")}>Обо мне</a>
