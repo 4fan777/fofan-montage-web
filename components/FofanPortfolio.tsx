@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { ArrowDown, ArrowUpRight, Film, Moon, Sun } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Film, Moon, Quote, Sun } from "lucide-react";
 import { LazyMotion, domAnimation, m, MotionConfig } from "framer-motion";
 import { contactLinks, heroLinks } from "@/config/links";
 import { featuredWork } from "@/config/featured-work";
@@ -67,10 +67,12 @@ export function FofanPortfolio() {
           <header className="site-header">
             <nav className="shell navigation" aria-label="Основная навигация">
               <a className="wordmark" href="#top" onClick={e => scrollTo(e, "top")}>
-                wade<span> montage</span><span className="logo-stop" aria-hidden="true">.</span>
+                <span className="nav-monogram">w.</span><span className="nav-brand">wade montage</span>
               </a>
               <div className="nav-actions">
-                <a className="nav-link" href="#works" onClick={e => scrollTo(e, "works")}>Работа</a>
+                <a className="nav-link about-nav" href="#top" onClick={e => scrollTo(e, "top")}>Обо мне</a>
+                <a className="nav-link" href="#works" onClick={e => scrollTo(e, "works")}>Работы</a>
+                <a className="nav-link" href="#reviews" onClick={e => scrollTo(e, "reviews")}>Отзывы</a>
                 <a className="nav-link" href="#contact" onClick={e => scrollTo(e, "contact")}>Контакт</a>
                 <button className="theme-button" onClick={toggleTheme}
                   aria-label={light ? "Включить тёмную тему" : "Включить светлую тему"}
@@ -83,23 +85,29 @@ export function FofanPortfolio() {
 
           <main>
             <section className="shell hero" aria-labelledby="hero-title">
-              <p className="intro">Дмитрий, 18 лет.</p>
-              <h1 id="hero-title">wade <span>montage</span><span className="title-stop">.</span></h1>
-              <p className="hero-description">Монтирую видео для YouTube,<br className="mobile-break" /> Reels и Shorts.</p>
-              <div className="hero-actions">
+              <div className="hero-topline"><p>Независимый видеомонтажёр</p><span>YouTube / Reels / Shorts</span></div>
+              <div className="identity-stage">
+                <span className="identity-corner corner-tl" aria-hidden="true" />
+                <span className="identity-corner corner-br" aria-hidden="true" />
+                <h1 id="hero-title" aria-label="wade montage"><span className="hero-name">WADE</span><span className="hero-role">montage</span></h1>
+              </div>
+              <div className="hero-bottom">
+                <div className="hero-bio"><p className="intro">Дмитрий, 18 лет.</p><p className="hero-description">Монтирую видео для YouTube,<br /> Reels и Shorts.</p></div>
+                <div className="hero-actions">
                 <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
                   Обсудить проект <ArrowUpRight size={18} />
                 </a>
                 <a className="text-link" href="#works" onClick={e => scrollTo(e, "works")}>
-                  К работе <ArrowDown size={16} />
+                  Смотреть работы <ArrowDown size={16} />
                 </a>
+                </div>
               </div>
             </section>
 
             <section className="shell works-section" id="works" aria-labelledby="works-title">
               <div className="section-heading">
-                <h2 id="works-title">Работа</h2>
-                <span>YouTube <span aria-hidden="true">/</span> 16:9</span>
+                <div><span className="section-index">01 / Портфолио</span><h2 id="works-title">Работы.</h2></div>
+                <span className="section-note">YouTube / 16:9</span>
               </div>
               <m.article initial={{ y: 8 }} whileInView={{ y: 0 }} viewport={{ once: true }}
                 transition={{ duration: 0.6, ease: "easeOut" }}>
@@ -114,26 +122,32 @@ export function FofanPortfolio() {
                     />
                   ) : (
                     <div className="video-empty" role="status">
+                      <div className="video-corner-label" aria-hidden="true">wade montage / YouTube</div>
                       <Film size={30} strokeWidth={1.2} aria-hidden="true" />
                       <p>Скоро здесь будет новая работа</p>
+                      <div className="video-bottom-label" aria-hidden="true"><span>01</span><span>16:9</span></div>
                     </div>
                   )}
                 </div>
                 {featuredWork.title && <h3 className="work-title">{featuredWork.title}</h3>}
                 {featuredWork.description && <p className="work-description">{featuredWork.description}</p>}
-                {featuredWork.review && (
-                  <blockquote className="work-review">
-                    <p>{featuredWork.review}</p>
-                    {featuredWork.reviewAuthor && <cite>{featuredWork.reviewAuthor}</cite>}
-                  </blockquote>
-                )}
               </m.article>
+            </section>
+
+            <section className="shell reviews-section" id="reviews" aria-labelledby="reviews-title">
+              <div className="section-heading"><div><span className="section-index">02 / Обратная связь</span><h2 id="reviews-title">Отзывы.</h2></div></div>
+              <div className="review-content">
+                <Quote className="review-symbol" size={64} strokeWidth={1} aria-hidden="true" />
+                {featuredWork.review ? (
+                  <blockquote className="work-review"><p>{featuredWork.review}</p>{featuredWork.reviewAuthor && <cite>{featuredWork.reviewAuthor}</cite>}</blockquote>
+                ) : <p className="review-empty">Отзыв пока не добавлен.</p>}
+              </div>
             </section>
 
             <section className="shell contact-section" id="contact" aria-labelledby="contact-title">
               <div className="contact-heading">
-                <p className="intro">Связь со мной</p>
-                <h2 id="contact-title">Обсудим ваш ролик.</h2>
+                <p className="section-index">03 / Контакт</p>
+                <h2 id="contact-title">Обсудим<br /><span>ваш ролик.</span></h2>
                 <p className="contact-copy">Напишите в Telegram.<br />Обсудим задачу, сроки и стоимость.</p>
               </div>
               <div className="contact-actions">
