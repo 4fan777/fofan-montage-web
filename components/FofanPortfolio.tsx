@@ -157,7 +157,16 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               <div className="review-content">
                 <Quote className="review-symbol" size={64} strokeWidth={1} aria-hidden="true" />
                 {featuredWork.review ? (
-                  <blockquote className="work-review"><p>{featuredWork.review}</p>{featuredWork.reviewAuthor && <cite>{featuredWork.reviewAuthor}</cite>}</blockquote>
+                  <blockquote className="work-review">
+                    <p>{featuredWork.review}</p>
+                    {featuredWork.reviewAuthor && <cite className="review-author">
+                      <span>by</span>
+                      <a href={featuredWork.reviewAuthorUrl} target="_blank" rel="noreferrer"
+                        aria-label={`${featuredWork.reviewAuthor} — YouTube-канал`}>
+                        {featuredWork.reviewAuthor}<ArrowUpRight size={18} aria-hidden="true" />
+                      </a>
+                    </cite>}
+                  </blockquote>
                 ) : <p className="review-empty">Отзыв пока не добавлен.</p>}
               </div>
             </section>
