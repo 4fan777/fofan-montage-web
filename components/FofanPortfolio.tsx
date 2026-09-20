@@ -144,7 +144,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
 
             <section className="shell works-section" id="works" aria-labelledby="works-title">
               <div className="section-heading">
-                <div><span className="section-index">01 / Портфолио</span><h2 id="works-title">Работы.</h2></div>
+                <div><span className="section-index">Портфолио</span><h2 id="works-title">Работы.</h2></div>
                 <span className="section-note">YouTube / Reels</span>
               </div>
               <div className="works-grid">
@@ -153,7 +153,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
             </section>
 
             <section className="shell reviews-section" id="reviews" aria-labelledby="reviews-title">
-              <div className="section-heading"><div><span className="section-index">02 / Обратная связь</span><h2 id="reviews-title">Отзывы.</h2></div></div>
+              <div className="section-heading"><div><span className="section-index">Обратная связь</span><h2 id="reviews-title">Отзывы.</h2></div></div>
               <div className="review-content">
                 <Quote className="review-symbol" size={64} strokeWidth={1} aria-hidden="true" />
                 {featuredWork.review ? (
@@ -164,7 +164,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
 
             <section className="shell contact-section" id="contact" aria-labelledby="contact-title">
               <div className="contact-heading">
-                <p className="section-index">03 / Контакт</p>
+                <p className="section-index">Контакт</p>
                 <h2 id="contact-title">Обсудим<br /><span>ваш ролик.</span></h2>
                 <p className="contact-copy">Напишите в Telegram.<br />Обсудим задачу, сроки и стоимость.</p>
               </div>
