@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Film, Moon, Play, Quote, Sun } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Film, Moon, Play, Quote, Sun } from "lucide-react";
 import { LazyMotion, domAnimation, m, MotionConfig } from "framer-motion";
 import { contactLinks, heroLinks } from "@/config/links";
 import { featuredWork } from "@/config/featured-work";
@@ -55,17 +55,29 @@ function WorkCard({ work, featured = false }: { work: SiteWorkItem; featured?: b
     {work.href ? <a className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}
       href={work.href} target="_blank" rel="noreferrer" aria-label={`Смотреть: ${work.title.ru}`}>{media}</a> :
       <div className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}>{media}</div>}
-    <div className="work-meta">{work.kind === "reels" ? "TikTok / Reels" : "YouTube"}</div>
-    <div className="work-caption"><h3>{work.title.ru}</h3></div>
   </article>;
 }
 
 export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] }) {
   const [light, setLight] = useState(true);
+  const [activeWork, setActiveWork] = useState(0);
+  const [slideHeight, setSlideHeight] = useState<number>();
   const animation = useRef(0);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const mainWork = initialWorks.find(work => getYouTubeId(work.href) === "o06bDTg3rUY")
     ?? defaultWorks.find(work => work.id === "youtube-dynamic")!;
-  const otherWorks = initialWorks.filter(work => getYouTubeId(work.href) !== "o06bDTg3rUY");
+  const horizontalWorks = [mainWork, ...initialWorks.filter(work =>
+    work.href !== mainWork.href && work.kind === "youtube" && work.frame !== "9:16")];
+  const reelsWorks = initialWorks.filter(work => work.kind === "reels" || work.frame === "9:16");
+  const selectedWork = Math.min(activeWork, horizontalWorks.length - 1);
+
+  useEffect(() => {
+    const slide = slideRefs.current[selectedWork];
+    if (!slide) return;
+    const observer = new ResizeObserver(() => setSlideHeight(Math.ceil(slide.getBoundingClientRect().height)));
+    observer.observe(slide);
+    return () => observer.disconnect();
+  }, [selectedWork]);
 
   useEffect(() => {
     try {
@@ -127,7 +139,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               <div className="nav-actions">
                 <a className="nav-link about-nav" href="#about" onClick={e => scrollTo(e, "about")}>Визитка</a>
                 <a className="nav-link" href="#works" onClick={e => scrollTo(e, "works")}>Работы</a>
-                <a className="nav-link" href="#reviews" onClick={e => scrollTo(e, "reviews")}>Отзывы</a>
+                <a className="nav-link" href="#reviews" onClick={e => { setActiveWork(0); scrollTo(e, "reviews"); }}>Отзывы</a>
               </div>
               <a className="header-contact" href={contactLinks.telegram} target="_blank" rel="noreferrer" aria-label="Написать в Telegram" title="Написать в Telegram"><span>Написать</span><ArrowUpRight size={16} /></a>
             </nav>
@@ -149,6 +161,13 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               </div>
               <div className="hero-visual">
                 <Image className="hero-mascot" src="/mascot/business.webp" alt="Маскот WADE со скрещёнными руками" width={600} height={900} sizes="(max-width: 760px) 230px, 340px" priority />
+                <figure className="hero-quote hero-quote-secondary">
+                  <figcaption className="hero-quote-author">
+                    <span className="hero-quote-avatar" aria-hidden="true">A</span>
+                    <span>aquarody</span>
+                  </figcaption>
+                  <blockquote>Результат очень удивил и оправдал цену с запасом.</blockquote>
+                </figure>
                 {featuredWork.review && <figure className="hero-quote">
                   <figcaption className="hero-quote-author">
                     <span className="hero-quote-avatar" aria-hidden="true">{featuredWork.reviewAuthor.charAt(0)}</span>
@@ -172,32 +191,79 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               <div className="section-heading">
                 <h2 id="works-title">Мои <em>работы</em></h2>
               </div>
-              <div className="featured-case">
-                <Reveal className="featured-video"><WorkCard work={mainWork} featured /></Reveal>
-                <Reveal className="featured-review" delay={0.1}>
-                  <section className="review-content" id="reviews" aria-labelledby="reviews-title">
-                    <h3 id="reviews-title" className="visually-hidden">Отзыв {featuredWork.reviewAuthor}</h3>
-                    <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
-                    {featuredWork.review ? (
-                  <blockquote className="work-review">
-                    <p>{featuredWork.review}</p>
-                    {featuredWork.reviewAuthor && <cite className="review-author">
-                      <a href={featuredWork.reviewAuthorUrl} target="_blank" rel="noreferrer"
-                        aria-label={`${featuredWork.reviewAuthor} — YouTube-канал`}>
-                        {featuredWork.reviewAuthor}<ArrowUpRight size={18} aria-hidden="true" />
-                      </a>
-                    </cite>}
-                  </blockquote>
-                    ) : <p className="review-empty">Отзыв пока не добавлен.</p>}
-                  </section>
-                  <p className="featured-description">В исходниках было много материала. Задача - собрать динамичный игровой ролик по референсу в стиле MrBeast. Судя по комментариям, нужную подачу удалось передать - многие зрители отдельно отметили сходство со стилем оригинала.</p>
+              <div className="works-slider" aria-label="Горизонтальные работы" style={{ height: slideHeight }}>
+                <div className="works-track" style={{ transform: `translate3d(-${selectedWork * 100}%, 0, 0)` }}>
+                  {horizontalWorks.map((work, index) => <div className="works-slide" key={work.id}
+                    ref={node => { slideRefs.current[index] = node; }}
+                    inert={index !== selectedWork} aria-hidden={index !== selectedWork}>
+                    <div className="featured-case">
+                      <div className="featured-video"><WorkCard work={work} featured /></div>
+                      <div className="featured-review">
+                        {index === 0 ? <>
+                          <section className="review-content" id="reviews" aria-labelledby="reviews-title">
+                            <h3 id="reviews-title" className="visually-hidden">Отзыв {featuredWork.reviewAuthor}</h3>
+                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
+                            <blockquote className="work-review">
+                              <p>{featuredWork.review}</p>
+                              <cite className="review-author">
+                                <a href={featuredWork.reviewAuthorUrl} target="_blank" rel="noreferrer"
+                                  aria-label={`${featuredWork.reviewAuthor} — YouTube-канал`}>
+                                  {featuredWork.reviewAuthor}<ArrowUpRight size={18} aria-hidden="true" />
+                                </a>
+                              </cite>
+                            </blockquote>
+                          </section>
+                          <p className="featured-description">В исходниках было много материала. Задача — собрать динамичный игровой ролик по референсу в стиле MrBeast. Судя по комментариям, нужную подачу удалось передать — многие зрители отдельно отметили сходство со стилем оригинала.</p>
+                        </> : getYouTubeId(work.href) === "eNbiIc5AtiA" ? <>
+                          <section className="review-content" aria-label="Отзыв Wade">
+                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
+                            <blockquote className="work-review">
+                              <p>Хотел быстро показать, на что способен мой плагин: динамичный монтаж и акценты на важных моментах.</p>
+                              <cite className="review-author"><span>Автор: Wade</span></cite>
+                            </blockquote>
+                          </section>
+                          <p className="featured-description">Начало монтировал 2–3 часа. Исходные материалы создал с помощью нейросети. Затем добавил динамики, чтобы удержать внимание зрителя. Этой работой я доволен: закончил раньше, чем планировал.</p>
+                        </> : getYouTubeId(work.href) === "R6D1iVwefPk" ? <>
+                          <section className="review-content" aria-label="Отзыв Wade">
+                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
+                            <blockquote className="work-review">
+                              <p>Хотел сделать ролик более познавательным, а интро — интересным с первых секунд, чтобы удержать внимание зрителя. В итоге это удалось: уже с первых минут понятно, что видео будет интересным.</p>
+                              <cite className="review-author"><span>Автор: Wade</span></cite>
+                            </blockquote>
+                          </section>
+                          <p className="featured-description">На начало ушло около 6 часов монтажа с учётом правок и саунд-дизайна. Как и планировал, добавил больше динамики в начале и в конце. Чтобы зритель не скучал, по ходу ролика использовал частые вставки.</p>
+                        </> : <div className="author-card"><span>Автор:</span><strong>Wade</strong></div>}
+                      </div>
+                    </div>
+                  </div>)}
+                </div>
+              </div>
+              <div className="works-controls" aria-label="Переключение работ">
+                <span className="visually-hidden" aria-live="polite">{horizontalWorks[selectedWork]?.title.ru}</span>
+                <button type="button" onClick={() => setActiveWork(Math.max(0, selectedWork - 1))}
+                  disabled={selectedWork === 0} aria-label="Предыдущая работа" title="Предыдущая работа"><ArrowLeft size={22} /></button>
+                <button type="button" onClick={() => setActiveWork(Math.min(horizontalWorks.length - 1, selectedWork + 1))}
+                  disabled={selectedWork === horizontalWorks.length - 1} aria-label="Следующая работа" title="Следующая работа"><ArrowRight size={22} /></button>
+              </div>
+              {reelsWorks.length > 0 && <div className="reels-section">
+                <h3>Reels <em>формат</em></h3>
+                <Reveal className="reels-case">
+                  <div className="reels-video"><WorkCard work={reelsWorks[0]} /></div>
+                  <div className="reels-review">
+                    <section className="review-content" aria-label="Отзыв aquarody">
+                      <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
+                      <blockquote className="work-review">
+                        <p>Рилс получился очень качественным. Просил больше динамики, красивого текста и саунд-дизайна. Результат очень удивил, цену оправдал даже с запасом)</p>
+                        <cite className="review-author"><span>Автор: aquarody</span></cite>
+                      </blockquote>
+                    </section>
+                    <p className="featured-description">В исходниках было сухое видео. Я сократил его, чтобы добавить динамики, создал изображения с помощью нейросети и выбрал самые подходящие.</p>
+                  </div>
                 </Reveal>
-              </div>
-              <div className="works-grid">
-                {otherWorks.map((work, index) => <Reveal key={work.id}
-                  className={`work-item ${work.frame === "9:16" ? "work-item-vertical" : ""}`}
-                  delay={Math.min(index, 2) * 0.06}><WorkCard work={work} /></Reveal>)}
-              </div>
+                {reelsWorks.length > 1 && <div className="reels-grid">
+                  {reelsWorks.slice(1).map(work => <Reveal key={work.id} className="reels-item"><WorkCard work={work} /></Reveal>)}
+                </div>}
+              </div>}
             </section>
 
             <section className="shell contact-section" id="contact" aria-labelledby="contact-title">
