@@ -55,11 +55,8 @@ function WorkCard({ work, featured = false }: { work: SiteWorkItem; featured?: b
     {work.href ? <a className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}
       href={work.href} target="_blank" rel="noreferrer" aria-label={`Смотреть: ${work.title.ru}`}>{media}</a> :
       <div className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}>{media}</div>}
-    <div className="work-meta"><span>{work.kind === "reels" ? "TikTok / Reels" : "YouTube"}</span><span>{work.frame}</span></div>
-    <div className="work-caption"><h3>{work.title.ru}</h3>
-      {work.href && <a className="work-open" href={work.href} target="_blank" rel="noreferrer"
-        aria-label={`Открыть: ${work.title.ru}`} title="Смотреть"><ArrowUpRight size={20} /></a>}
-    </div>
+    <div className="work-meta">{work.kind === "reels" ? "TikTok / Reels" : "YouTube"}</div>
+    <div className="work-caption"><h3>{work.title.ru}</h3></div>
   </article>;
 }
 
