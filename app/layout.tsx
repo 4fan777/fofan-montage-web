@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={manrope.variable}>
+    <html lang="ru" className={manrope.variable} data-theme="light">
       <body>{children}</body>
     </html>
   );

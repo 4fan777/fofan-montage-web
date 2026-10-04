@@ -32,7 +32,7 @@ export const works: SiteWorkItem[] = [
       en: "Tutorial",
     },
     // Replace with the real YouTube URL.
-    href: "https://youtu.be/OT5h_3qf9l8?si=xYYmag-xMPAtB1MO",
+    href: "https://youtu.be/eNbiIc5AtiA?si=aZ4ravF6r2IFAvFX",
     frame: "16:9",
   },
   {
@@ -43,7 +43,7 @@ export const works: SiteWorkItem[] = [
       en: "YouTube opener",
     },
     // Replace with the real YouTube URL.
-    href: "https://youtu.be/gyAU_h0Wrco?si=zEseufCvzIxFlSSd",
+    href: "https://youtu.be/R6D1iVwefPk?si=BPJ0lPDdw2pBpTvP",
     frame: "16:9",
   },
 ];
