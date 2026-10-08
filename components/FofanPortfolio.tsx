@@ -283,10 +283,10 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               <div className="hero-copy">
                 <h1 id="hero-title">
                   <span className="line"><span className="line-inner" style={{ ["--i" as string]: 0 }}><em>Монтаж для</em></span></span>
-                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 1 }}><em>YouTube,</em></span></span>
-                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 2 }}>Reels и Shorts.</span></span>
+                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 1 }}><em>YouTube</em></span></span>
+                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 2 }}>Reels и Shorts</span></span>
                 </h1>
-                <p className="hero-summary">Дмитрий, 18 лет. Видеомонтажёр.</p>
+                <p className="hero-summary">Дмитрий 18 лет Видеомонтажёр</p>
                 <div className="hero-actions">
                   <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
                     <span>Обсудить проект</span> <ArrowRight size={18} />
@@ -346,16 +346,16 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
                         {index === 0 ? <>
                           <Review text={featuredWork.review} label={`Отзыв ${featuredWork.reviewAuthor}`}
                             author={<span>{featuredWork.reviewAuthor}</span>} />
-                          <p className="featured-description">В исходниках было много материала. Задача — собрать динамичный игровой ролик по референсу в стиле MrBeast. Судя по комментариям, нужную подачу удалось передать — многие зрители отдельно отметили сходство со стилем оригинала.</p>
+                          <p className="featured-description">В исходниках было много материала Задача собрать динамичный игровой ролик по референсу в стиле MrBeast Судя по комментариям нужную подачу удалось передать многие зрители отдельно отметили сходство со стилем оригинала</p>
                         </> : getYouTubeId(work.href) === "eNbiIc5AtiA" ? <>
                           <Review text="Хотел быстро показать, на что способен мой плагин: динамичный монтаж и акценты на важных моментах."
                             label="Отзыв Wade" author={<span>Автор: Wade</span>} />
-                          <p className="featured-description">Начало монтировал 2–3 часа. Исходные материалы создал с помощью нейросети. Затем добавил динамики, чтобы удержать внимание зрителя. Этой работой я доволен: закончил раньше, чем планировал.</p>
+                          <p className="featured-description">Начало монтировал от 2 до 3 часов Исходные материалы создал с помощью нейросети Затем добавил динамики чтобы удержать внимание зрителя Этой работой я доволен закончил раньше чем планировал</p>
                         </> : getYouTubeId(work.href) === "R6D1iVwefPk" ? <>
                           <Review text="Хотел сделать ролик более познавательным, а интро — интересным с первых секунд, чтобы удержать внимание зрителя. В итоге это удалось: уже с первых минут понятно, что видео будет интересным."
                             label="Отзыв Wade" author={<span>Автор: Wade</span>} />
-                          <p className="featured-description">На начало ушло около 6 часов монтажа с учётом правок и саунд-дизайна. Как и планировал, добавил больше динамики в начале и в конце. Чтобы зритель не скучал, по ходу ролика использовал частые вставки.</p>
-                        </> : <div className="author-card"><span>Автор:</span><strong>Wade</strong></div>}
+                          <p className="featured-description">На начало ушло около 6 часов монтажа с учётом правок и саунд-дизайна Как и планировал добавил больше динамики в начале и в конце Чтобы зритель не скучал по ходу ролика использовал частые вставки</p>
+                        </> : <div className="author-card"><span>Автор</span><strong>Wade</strong></div>}
                       </div>
                     </div>
                     {index !== selectedWork && <button type="button" className="slide-cover" tabIndex={-1} aria-hidden="true"
@@ -374,7 +374,7 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
                   <div className="reels-video"><WorkCard work={reelsWorks[0]} /></div>
                   <div className="reels-review">
                     <Review text={reelsReview} label="Отзыв aquarody" author={<span>Автор: aquarody</span>} />
-                    <p className="featured-description">В исходниках было сухое видео. Я сократил его, чтобы добавить динамики, создал изображения с помощью нейросети и выбрал самые подходящие.</p>
+                    <p className="featured-description">В исходниках было сухое видео Я сократил его чтобы добавить динамики создал изображения с помощью нейросети и выбрал самые подходящие</p>
                   </div>
                 </Reveal>
                 {reelsWorks.length > 1 && <div className="reels-grid">
@@ -398,9 +398,9 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
             </section>
 
             <section className="shell contact-section" id="contact" aria-labelledby="contact-title">
-              <h2 id="contact-title"><Line>Обсудим</Line><Line delay={0.08}><em>ваш ролик.</em></Line></h2>
+              <h2 id="contact-title"><Line>Обсудим</Line><Line delay={0.08}><em>ваш ролик</em></Line></h2>
               <Reveal className="contact-row" delay={0.15}>
-                <p className="contact-copy">Напишите, что нужно смонтировать и к какому сроку.</p>
+                <p className="contact-copy">Напишите что нужно смонтировать и к какому сроку</p>
                 <div className="contact-actions">
                   <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
                     <span>Написать в Telegram</span> <ArrowRight size={18} />
