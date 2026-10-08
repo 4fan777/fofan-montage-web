@@ -1,13 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Film, Moon, Play, Quote, Sun } from "lucide-react";
-import { LazyMotion, domAnimation, m, MotionConfig } from "framer-motion";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Film, Moon, Play, Sun } from "lucide-react";
+import {
+  LazyMotion, domAnimation, m, MotionConfig, useMotionValue, useMotionValueEvent,
+  useScroll, useSpring, useTransform,
+} from "framer-motion";
 import { contactLinks, heroLinks } from "@/config/links";
 import { featuredWork } from "@/config/featured-work";
+import { themeStorageKey } from "@/config/theme";
 import { works as defaultWorks } from "@/config/works";
 import type { SiteWorkItem } from "@/lib/work-types";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 function getYouTubeId(href: string) {
   try {
@@ -23,18 +30,84 @@ function getYouTubeId(href: string) {
   }
 }
 
-function Reveal({ children, className, delay = 0, id }: {
-  children: ReactNode; className: string; delay?: number; id?: string;
+/** Fades content up, or opens it like a shutter when `wipe` is set. */
+function Reveal({ children, className, delay = 0, id, wipe = false }: {
+  children: ReactNode; className: string; delay?: number; id?: string; wipe?: boolean;
 }) {
+  // A clipped element never reports as visible, so a wipe is observed on an unclipped wrapper.
+  if (wipe) return <m.div id={id} className={`reveal ${className}`} initial="hidden" whileInView="shown"
+    viewport={{ once: true, amount: 0.15 }}>
+    <m.div className="reveal-wipe" variants={{
+      hidden: { opacity: 0, clipPath: "inset(0% 0% 100% 0%)" },
+      shown: { opacity: 1, clipPath: "inset(0% 0% 0% 0%)", transition: { duration: 1.1, delay, ease } },
+    }}>{children}</m.div>
+  </m.div>;
   return <m.div id={id} className={`reveal ${className}`}
-    initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.12 }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 0.61, 0.36, 1] }}>
+    initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.15 }}
+    transition={{ duration: 0.9, delay, ease }}>
     {children}
   </m.div>;
 }
 
+/** Slides a heading line up from behind a mask when it enters the viewport. */
+function Line({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  return <m.span className="line" initial="hidden" whileInView="shown" viewport={{ once: true, amount: 0.5 }}>
+    <m.span className="line-inner" variants={{
+      hidden: { y: "108%" },
+      shown: { y: "0%", transition: { duration: 1.05, delay, ease } },
+    }}>
+      {children}
+    </m.span>
+  </m.span>;
+}
+
+/** The existing mascot drawing: breathes and leans slightly toward the cursor. */
+function Mascot() {
+  const pointer = useMotionValue(0);
+  const lean = useSpring(pointer, { stiffness: 50, damping: 16 });
+  const rotate = useTransform(lean, [-1, 1], [-3.5, 3.5]);
+  const x = useTransform(lean, [-1, 1], [-8, 8]);
+  const stageX = useTransform(lean, [-1, 1], [14, -14]);
+
+  useEffect(() => {
+    if (!matchMedia("(pointer: fine)").matches) return;
+    const move = (event: PointerEvent) => pointer.set(event.clientX / innerWidth * 2 - 1);
+    addEventListener("pointermove", move, { passive: true });
+    return () => removeEventListener("pointermove", move);
+  }, [pointer]);
+
+  return <div className="mascot">
+    <m.div className="mascot-stage" style={{ x: stageX }} aria-hidden="true">
+      <span className="mascot-disc" />
+    </m.div>
+    <span className="mascot-shadow" aria-hidden="true" />
+    <m.div className="mascot-lean" style={{ rotate, x }}>
+      <div className="mascot-breath">
+        <Image className="hero-mascot" src="/mascot/business.webp" alt="Маскот WADE со скрещёнными руками"
+          width={600} height={900} sizes="(max-width: 760px) 190px, 240px" priority />
+      </div>
+    </m.div>
+  </div>;
+}
+
+function ReviewCard({ text, author, context }: { text: string; author: string; context: string }) {
+  return <figure className="review-card">
+    <span className="review-card-context">{context}</span>
+    <blockquote><p>{text}</p></blockquote>
+    <figcaption className="review-card-author">
+      <span className="review-card-avatar" aria-hidden="true">{author.charAt(0).toUpperCase()}</span>
+      <span>{author}</span>
+    </figcaption>
+  </figure>;
+}
+
+const reelsReview = "Рилс получился очень качественным. Просил больше динамики, красивого текста и саунд-дизайна. Результат очень удивил, цену оправдал даже с запасом)";
+
 function WorkCard({ work, featured = false }: { work: SiteWorkItem; featured?: boolean }) {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const drift = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
   const youtubeId = getYouTubeId(work.href);
   const [fallback, setFallback] = useState(false);
   const preview = youtubeId && (featured || !work.thumbnail)
@@ -42,27 +115,42 @@ function WorkCard({ work, featured = false }: { work: SiteWorkItem; featured?: b
     : work.thumbnail;
   const [failed, setFailed] = useState(false);
   const media = <>
-    {preview && !failed ? <Image src={preview} alt={work.title.ru} fill
-      sizes={featured ? "(max-width: 760px) calc(100vw - 40px), (max-width: 1150px) 55vw, 594px" : "(max-width: 640px) calc(100vw - 40px), (max-width: 1150px) 45vw, 516px"}
-      className="work-image"
-      onLoad={event => {
-        if (youtubeId && !fallback && event.currentTarget.naturalWidth <= 120) setFallback(true);
-      }}
-      onError={() => youtubeId && !fallback ? setFallback(true) : setFailed(true)} /> : <Film size={32} strokeWidth={1.2} />}
+    {preview && !failed ? <m.div className="work-parallax" style={{ y: drift }}>
+      <Image src={preview} alt={work.title.ru} fill
+        sizes={featured ? "(max-width: 760px) calc(100vw - 40px), (max-width: 1150px) 52vw, 540px" : "(max-width: 640px) calc(100vw - 40px), 320px"}
+        className="work-image"
+        onLoad={event => {
+          if (youtubeId && !fallback && event.currentTarget.naturalWidth <= 120) setFallback(true);
+        }}
+        onError={() => youtubeId && !fallback ? setFallback(true) : setFailed(true)} />
+    </m.div> : <Film size={32} strokeWidth={1.2} />}
     {work.href && <span className="work-play"><Play size={22} fill="currentColor" strokeWidth={0} /></span>}
   </>;
-  return <article className={`work-card ${featured ? "work-featured" : ""}`}>
+  return <article ref={ref} className={`work-card ${featured ? "work-featured" : ""}`}>
     {work.href ? <a className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}
       href={work.href} target="_blank" rel="noreferrer" aria-label={`Смотреть: ${work.title.ru}`}>{media}</a> :
       <div className={`work-media ${work.frame === "9:16" ? "work-vertical" : ""}`}>{media}</div>}
   </article>;
 }
 
+function Review({ text, author, label }: { text: string; author: ReactNode; label: string }) {
+  return <section className="review-content" aria-label={label}>
+    <span className="review-mark" aria-hidden="true">“</span>
+    <blockquote className="work-review">
+      <p>{text}</p>
+      <cite className="review-author">{author}</cite>
+    </blockquote>
+  </section>;
+}
+
 export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] }) {
-  const [light, setLight] = useState(true);
+  const [light, setLight] = useState(false);
   const [activeWork, setActiveWork] = useState(0);
-  const [slideHeight, setSlideHeight] = useState<number>();
+  const [headerHidden, setHeaderHidden] = useState(false);
   const animation = useRef(0);
+  const autoScrolling = useRef(false);
+  const railRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const mainWork = initialWorks.find(work => getYouTubeId(work.href) === "o06bDTg3rUY")
     ?? defaultWorks.find(work => work.id === "youtube-dynamic")!;
@@ -70,18 +158,30 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
     work.href !== mainWork.href && work.kind === "youtube" && work.frame !== "9:16")];
   const reelsWorks = initialWorks.filter(work => work.kind === "reels" || work.frame === "9:16");
   const selectedWork = Math.min(activeWork, horizontalWorks.length - 1);
+  const multiple = horizontalWorks.length > 1;
 
-  useEffect(() => {
-    const slide = slideRefs.current[selectedWork];
-    if (!slide) return;
-    const observer = new ResizeObserver(() => setSlideHeight(Math.ceil(slide.getBoundingClientRect().height)));
-    observer.observe(slide);
-    return () => observer.disconnect();
-  }, [selectedWork]);
+  const { scrollY, scrollYProgress } = useScroll();
+  const pageProgress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.3 });
+  const glowA = useTransform(scrollYProgress, [0, 1], ["0vh", "70vh"]);
+  const glowB = useTransform(scrollYProgress, [0, 1], ["0vh", "-50vh"]);
+  const { scrollXProgress } = useScroll({ container: railRef });
+  const railProgress = useSpring(
+    useTransform(scrollXProgress, [0, 1], [1 / horizontalWorks.length, 1]),
+    { stiffness: 160, damping: 28 },
+  );
+  const { scrollYProgress: introProgress } = useScroll({ target: introRef, offset: ["start end", "start 0.3"] });
+  const introScale = useTransform(introProgress, [0, 1], [0.9, 1]);
+
+  useMotionValueEvent(scrollY, "change", value => {
+    if (autoScrolling.current) return;
+    const previous = scrollY.getPrevious() ?? 0;
+    if (Math.abs(value - previous) < 4) return;
+    setHeaderHidden(value > previous && value > 180);
+  });
 
   useEffect(() => {
     try {
-      setLight(localStorage.getItem("wade-appearance-v2") !== "dark");
+      setLight(localStorage.getItem(themeStorageKey) === "light");
     } catch {}
     return () => cancelAnimationFrame(animation.current);
   }, []);
@@ -91,47 +191,79 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
   }, [light]);
 
   function toggleTheme() {
-    setLight(!light);
+    const next = !light;
+    const apply = () => {
+      document.documentElement.dataset.theme = next ? "light" : "dark";
+      flushSync(() => setLight(next));
+    };
+    if ("startViewTransition" in document) document.startViewTransition(apply);
+    else apply();
     try {
-      localStorage.setItem("wade-appearance-v2", light ? "dark" : "light");
+      localStorage.setItem(themeStorageKey, next ? "light" : "dark");
     } catch {}
+  }
+
+  function goToWork(index: number) {
+    const rail = railRef.current;
+    const slide = slideRefs.current[index];
+    if (!rail || !slide) return;
+    setActiveWork(index);
+    rail.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
+  }
+
+  function syncActiveWork() {
+    const rail = railRef.current;
+    if (!rail) return;
+    let closest = 0;
+    slideRefs.current.forEach((slide, index) => {
+      const current = slideRefs.current[closest];
+      if (slide && current && Math.abs(slide.offsetLeft - rail.scrollLeft) < Math.abs(current.offsetLeft - rail.scrollLeft)) closest = index;
+    });
+    setActiveWork(closest);
   }
 
   function scrollTo(event: MouseEvent<HTMLAnchorElement>, id: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    const target = document.getElementById(id);
-    if (!target) return;
+    const section = document.getElementById(id);
+    if (!section) return;
+    const target = section.querySelector("[data-anchor]") ?? section;
+    const header = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
     cancelAnimationFrame(animation.current);
+    setHeaderHidden(false);
+    autoScrolling.current = true;
     const start = window.scrollY;
-    const end = Math.max(0, Math.min(
-      target.getBoundingClientRect().top + start - 96,
+    const end = id === "top" ? 0 : Math.max(0, Math.min(
+      target.getBoundingClientRect().top + start - header - 32,
       document.documentElement.scrollHeight - innerHeight,
     ));
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      window.scrollTo(0, end);
-      return;
-    }
     const time = performance.now();
     function step(now: number) {
       const t = Math.min((now - time) / 1100, 1);
       const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       window.scrollTo(0, start + (end - start) * eased);
       if (t < 1) animation.current = requestAnimationFrame(step);
+      else autoScrolling.current = false;
     }
     animation.current = requestAnimationFrame(step);
   }
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user">
+      <MotionConfig reducedMotion="never">
         <div
           className="portfolio"
           id="top"
-          onWheel={() => cancelAnimationFrame(animation.current)}
-          onTouchStart={() => cancelAnimationFrame(animation.current)}
+          onWheel={() => { cancelAnimationFrame(animation.current); autoScrolling.current = false; }}
+          onTouchStart={() => { cancelAnimationFrame(animation.current); autoScrolling.current = false; }}
         >
-          <header className="site-header">
+          <div className="ambient" aria-hidden="true">
+            <m.span className="glow glow-a" style={{ y: glowA }} />
+            <m.span className="glow glow-b" style={{ y: glowB }} />
+          </div>
+          <div className="grain" aria-hidden="true" />
+
+          <header className={`site-header ${headerHidden ? "is-hidden" : ""}`}>
             <nav className="shell navigation" aria-label="Основная навигация">
               <a className="wordmark" href="#top" onClick={e => scrollTo(e, "top")}>
                 <span className="nav-brand">WADE<span>montage</span></span>
@@ -139,145 +271,142 @@ export function FofanPortfolio({ initialWorks }: { initialWorks: SiteWorkItem[] 
               <div className="nav-actions">
                 <a className="nav-link about-nav" href="#about" onClick={e => scrollTo(e, "about")}>Визитка</a>
                 <a className="nav-link" href="#works" onClick={e => scrollTo(e, "works")}>Работы</a>
-                <a className="nav-link" href="#reviews" onClick={e => { setActiveWork(0); scrollTo(e, "reviews"); }}>Отзывы</a>
+                <a className="nav-link" href="#reviews" onClick={e => scrollTo(e, "reviews")}>Отзывы</a>
               </div>
               <a className="header-contact" href={contactLinks.telegram} target="_blank" rel="noreferrer" aria-label="Написать в Telegram" title="Написать в Telegram"><span>Написать</span><ArrowUpRight size={16} /></a>
             </nav>
+            <m.span className="scroll-progress" style={{ scaleX: pageProgress }} aria-hidden="true" />
           </header>
 
           <main>
             <section className="shell hero" aria-labelledby="hero-title">
               <div className="hero-copy">
-                <h1 id="hero-title"><em>Монтаж для<br />YouTube,</em><br />Reels и Shorts.</h1>
+                <h1 id="hero-title">
+                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 0 }}><em>Монтаж для</em></span></span>
+                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 1 }}><em>YouTube,</em></span></span>
+                  <span className="line"><span className="line-inner" style={{ ["--i" as string]: 2 }}>Reels и Shorts.</span></span>
+                </h1>
                 <p className="hero-summary">Дмитрий, 18 лет. Видеомонтажёр.</p>
                 <div className="hero-actions">
                   <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
-                    Обсудить проект <ArrowRight size={18} />
+                    <span>Обсудить проект</span> <ArrowRight size={18} />
                   </a>
-                </div>
-                <div className="hero-details">
-                  <span className="experience-badge"><strong>2+</strong><span>года в Ae и Pr</span></span>
+                  <a className="ghost-link" href="#works" onClick={e => scrollTo(e, "works")}>Смотреть работы <ArrowDown size={16} /></a>
                 </div>
               </div>
-              <div className="hero-visual">
-                <Image className="hero-mascot" src="/mascot/business.webp" alt="Маскот WADE со скрещёнными руками" width={600} height={900} sizes="(max-width: 760px) 230px, 340px" priority />
-                <figure className="hero-quote hero-quote-secondary">
-                  <figcaption className="hero-quote-author">
-                    <span className="hero-quote-avatar" aria-hidden="true">A</span>
-                    <span>aquarody</span>
-                  </figcaption>
-                  <blockquote>Результат очень удивил и оправдал цену с запасом.</blockquote>
+              <div className="hero-visual"><Mascot /></div>
+              <div className="hero-notes">
+                <div className="hero-note experience-badge"><strong>2+</strong><span>года в Ae и Pr</span></div>
+                <figure className="hero-note hero-quote">
+                  <span className="hero-quote-avatar" aria-hidden="true">A</span>
+                  <div>
+                    <blockquote>Результат очень удивил и оправдал цену с запасом.</blockquote>
+                    <figcaption className="hero-quote-author">aquarody</figcaption>
+                  </div>
                 </figure>
-                {featuredWork.review && <figure className="hero-quote">
-                  <figcaption className="hero-quote-author">
-                    <span className="hero-quote-avatar" aria-hidden="true">{featuredWork.reviewAuthor.charAt(0)}</span>
-                    <a href={featuredWork.reviewAuthorUrl} target="_blank" rel="noreferrer">{featuredWork.reviewAuthor}<ArrowUpRight size={14} aria-hidden="true" /></a>
-                  </figcaption>
-                  <blockquote>Монтаж аккуратный, ничего не перегружено.</blockquote>
+                {featuredWork.review && <figure className="hero-note hero-quote">
+                  <span className="hero-quote-avatar" aria-hidden="true">{featuredWork.reviewAuthor.charAt(0)}</span>
+                  <div>
+                    <blockquote>Монтаж аккуратный, ничего не перегружено.</blockquote>
+                    <figcaption className="hero-quote-author">{featuredWork.reviewAuthor}</figcaption>
+                  </div>
                 </figure>}
               </div>
             </section>
 
             <section className="shell introduction-section" id="about" aria-label="Видео-визитка">
+              <div data-anchor><Reveal className="section-label"><span>Видео-визитка</span></Reveal></div>
               {/* Set featuredWork.youtubeId to add a video introduction here. */}
-              <Reveal className="introduction-media">
+              <m.div ref={introRef} className="introduction-media" style={{ scale: introScale }}>
                 {featuredWork.youtubeId ? <iframe src={`https://www.youtube-nocookie.com/embed/${featuredWork.youtubeId}`}
                   title="Видео-визитка WADE" loading="lazy" allow="encrypted-media; picture-in-picture" allowFullScreen /> :
                   <div className="introduction-empty" role="img" aria-label="Пустое место для будущей видео-визитки" />}
-              </Reveal>
+              </m.div>
             </section>
 
             <section className="shell works-section" id="works" aria-labelledby="works-title">
-              <div className="section-heading">
-                <h2 id="works-title">Мои <em>работы</em></h2>
+              <div className="section-head" data-anchor>
+                <h2 id="works-title"><Line>Мои <em>работы</em></Line></h2>
+                {multiple && <div className="works-controls" aria-label="Переключение работ">
+                  <span className="visually-hidden" aria-live="polite">{horizontalWorks[selectedWork]?.title.ru}</span>
+                  <button type="button" onClick={() => goToWork(Math.max(0, selectedWork - 1))}
+                    disabled={selectedWork === 0} aria-label="Предыдущая работа" title="Предыдущая работа"><ArrowLeft size={20} /></button>
+                  <button type="button" onClick={() => goToWork(Math.min(horizontalWorks.length - 1, selectedWork + 1))}
+                    disabled={selectedWork === horizontalWorks.length - 1} aria-label="Следующая работа" title="Следующая работа"><ArrowRight size={20} /></button>
+                </div>}
               </div>
-              <div className="works-slider" aria-label="Горизонтальные работы" style={{ height: slideHeight }}>
-                <div className="works-track" style={{ transform: `translate3d(-${selectedWork * 100}%, 0, 0)` }}>
-                  {horizontalWorks.map((work, index) => <div className="works-slide" key={work.id}
-                    ref={node => { slideRefs.current[index] = node; }}
-                    inert={index !== selectedWork} aria-hidden={index !== selectedWork}>
-                    <div className="featured-case">
+              <Reveal className="works-stage" wipe>
+                <div className={`works-rail ${multiple ? "" : "is-single"}`} ref={railRef} onScroll={syncActiveWork}
+                  aria-label="Горизонтальные работы">
+                  {horizontalWorks.map((work, index) => <div className={`works-slide ${index === selectedWork ? "is-active" : ""}`} key={work.id}
+                    ref={node => { slideRefs.current[index] = node; }}>
+                    <div className="featured-case" inert={index !== selectedWork} aria-hidden={index !== selectedWork}>
                       <div className="featured-video"><WorkCard work={work} featured /></div>
                       <div className="featured-review">
                         {index === 0 ? <>
-                          <section className="review-content" id="reviews" aria-labelledby="reviews-title">
-                            <h3 id="reviews-title" className="visually-hidden">Отзыв {featuredWork.reviewAuthor}</h3>
-                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
-                            <blockquote className="work-review">
-                              <p>{featuredWork.review}</p>
-                              <cite className="review-author">
-                                <a href={featuredWork.reviewAuthorUrl} target="_blank" rel="noreferrer"
-                                  aria-label={`${featuredWork.reviewAuthor} — YouTube-канал`}>
-                                  {featuredWork.reviewAuthor}<ArrowUpRight size={18} aria-hidden="true" />
-                                </a>
-                              </cite>
-                            </blockquote>
-                          </section>
+                          <Review text={featuredWork.review} label={`Отзыв ${featuredWork.reviewAuthor}`}
+                            author={<span>{featuredWork.reviewAuthor}</span>} />
                           <p className="featured-description">В исходниках было много материала. Задача — собрать динамичный игровой ролик по референсу в стиле MrBeast. Судя по комментариям, нужную подачу удалось передать — многие зрители отдельно отметили сходство со стилем оригинала.</p>
                         </> : getYouTubeId(work.href) === "eNbiIc5AtiA" ? <>
-                          <section className="review-content" aria-label="Отзыв Wade">
-                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
-                            <blockquote className="work-review">
-                              <p>Хотел быстро показать, на что способен мой плагин: динамичный монтаж и акценты на важных моментах.</p>
-                              <cite className="review-author"><span>Автор: Wade</span></cite>
-                            </blockquote>
-                          </section>
+                          <Review text="Хотел быстро показать, на что способен мой плагин: динамичный монтаж и акценты на важных моментах."
+                            label="Отзыв Wade" author={<span>Автор: Wade</span>} />
                           <p className="featured-description">Начало монтировал 2–3 часа. Исходные материалы создал с помощью нейросети. Затем добавил динамики, чтобы удержать внимание зрителя. Этой работой я доволен: закончил раньше, чем планировал.</p>
                         </> : getYouTubeId(work.href) === "R6D1iVwefPk" ? <>
-                          <section className="review-content" aria-label="Отзыв Wade">
-                            <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
-                            <blockquote className="work-review">
-                              <p>Хотел сделать ролик более познавательным, а интро — интересным с первых секунд, чтобы удержать внимание зрителя. В итоге это удалось: уже с первых минут понятно, что видео будет интересным.</p>
-                              <cite className="review-author"><span>Автор: Wade</span></cite>
-                            </blockquote>
-                          </section>
+                          <Review text="Хотел сделать ролик более познавательным, а интро — интересным с первых секунд, чтобы удержать внимание зрителя. В итоге это удалось: уже с первых минут понятно, что видео будет интересным."
+                            label="Отзыв Wade" author={<span>Автор: Wade</span>} />
                           <p className="featured-description">На начало ушло около 6 часов монтажа с учётом правок и саунд-дизайна. Как и планировал, добавил больше динамики в начале и в конце. Чтобы зритель не скучал, по ходу ролика использовал частые вставки.</p>
                         </> : <div className="author-card"><span>Автор:</span><strong>Wade</strong></div>}
                       </div>
                     </div>
+                    {index !== selectedWork && <button type="button" className="slide-cover" tabIndex={-1} aria-hidden="true"
+                      onClick={() => goToWork(index)} />}
                   </div>)}
+                  {multiple && <div className="rail-spacer" aria-hidden="true" />}
                 </div>
-              </div>
-              <div className="works-controls" aria-label="Переключение работ">
-                <span className="visually-hidden" aria-live="polite">{horizontalWorks[selectedWork]?.title.ru}</span>
-                <button type="button" onClick={() => setActiveWork(Math.max(0, selectedWork - 1))}
-                  disabled={selectedWork === 0} aria-label="Предыдущая работа" title="Предыдущая работа"><ArrowLeft size={22} /></button>
-                <button type="button" onClick={() => setActiveWork(Math.min(horizontalWorks.length - 1, selectedWork + 1))}
-                  disabled={selectedWork === horizontalWorks.length - 1} aria-label="Следующая работа" title="Следующая работа"><ArrowRight size={22} /></button>
-              </div>
+                {multiple && <div className="rail-progress" aria-hidden="true"><m.span style={{ scaleX: railProgress }} /></div>}
+              </Reveal>
+
               {reelsWorks.length > 0 && <div className="reels-section">
-                <h3>Reels <em>формат</em></h3>
+                <div className="section-head reels-head">
+                  <h3><Line>Reels <em>формат</em></Line></h3>
+                </div>
                 <Reveal className="reels-case">
                   <div className="reels-video"><WorkCard work={reelsWorks[0]} /></div>
                   <div className="reels-review">
-                    <section className="review-content" aria-label="Отзыв aquarody">
-                      <Quote className="review-symbol" size={32} strokeWidth={1.5} aria-hidden="true" />
-                      <blockquote className="work-review">
-                        <p>Рилс получился очень качественным. Просил больше динамики, красивого текста и саунд-дизайна. Результат очень удивил, цену оправдал даже с запасом)</p>
-                        <cite className="review-author"><span>Автор: aquarody</span></cite>
-                      </blockquote>
-                    </section>
+                    <Review text={reelsReview} label="Отзыв aquarody" author={<span>Автор: aquarody</span>} />
                     <p className="featured-description">В исходниках было сухое видео. Я сократил его, чтобы добавить динамики, создал изображения с помощью нейросети и выбрал самые подходящие.</p>
                   </div>
                 </Reveal>
                 {reelsWorks.length > 1 && <div className="reels-grid">
-                  {reelsWorks.slice(1).map(work => <Reveal key={work.id} className="reels-item"><WorkCard work={work} /></Reveal>)}
+                  {reelsWorks.slice(1).map((work, index) => <Reveal key={work.id} className="reels-item" delay={index * 0.08}><WorkCard work={work} /></Reveal>)}
                 </div>}
               </div>}
             </section>
 
+            <section className="shell reviews-section" id="reviews" aria-labelledby="reviews-title">
+              <div className="section-head" data-anchor>
+                <h2 id="reviews-title"><Line>Отзывы <em>заказчиков</em></Line></h2>
+              </div>
+              <div className="reviews-grid">
+                {featuredWork.review && <Reveal className="reviews-item">
+                  <ReviewCard text={featuredWork.review} author={featuredWork.reviewAuthor} context="YouTube-ролик" />
+                </Reveal>}
+                <Reveal className="reviews-item" delay={0.12}>
+                  <ReviewCard text={reelsReview} author="aquarody" context="Reels" />
+                </Reveal>
+              </div>
+            </section>
+
             <section className="shell contact-section" id="contact" aria-labelledby="contact-title">
-              <Reveal className="contact-inner">
-              <div className="contact-heading">
-                <h2 id="contact-title">Обсудим <em>ваш ролик.</em></h2>
+              <h2 id="contact-title"><Line>Обсудим</Line><Line delay={0.08}><em>ваш ролик.</em></Line></h2>
+              <Reveal className="contact-row" delay={0.15}>
                 <p className="contact-copy">Напишите, что нужно смонтировать и к какому сроку.</p>
-              </div>
-              <div className="contact-actions">
-                <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
-                  Написать в Telegram <ArrowRight size={18} />
-                </a>
-                <span className="contact-username">{contactLinks.telegramUsername}</span>
-              </div>
+                <div className="contact-actions">
+                  <a className="primary-link" href={contactLinks.telegram} target="_blank" rel="noreferrer">
+                    <span>Написать в Telegram</span> <ArrowRight size={18} />
+                  </a>
+                  <span className="contact-username">{contactLinks.telegramUsername}</span>
+                </div>
               </Reveal>
             </section>
           </main>

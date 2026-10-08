@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { themeStorageKey } from "@/config/theme";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin", "cyrillic"], variable: "--font-manrope", display: "swap" });
@@ -37,7 +38,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={manrope.variable} data-theme="light">
+    <html lang="ru" className={manrope.variable} data-theme="dark" suppressHydrationWarning>
+      <head>
+        {/* Dark is the default; apply a saved light choice before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("${themeStorageKey}")==="light")document.documentElement.dataset.theme="light"}catch(e){}` }} />
+      </head>
       <body>{children}</body>
     </html>
   );
