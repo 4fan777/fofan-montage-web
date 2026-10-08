@@ -7,3 +7,7 @@ dist/
 *.tsbuildinfo
 .env
 .env*.local
+
+# Claude Code local settings and heavy session screenshots
+.claude/settings.local.json
+artifacts/crew-city-session/
