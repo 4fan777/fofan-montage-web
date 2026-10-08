@@ -62,13 +62,13 @@ function Line({ children, delay = 0 }: { children: ReactNode; delay?: number }) 
   </m.span>;
 }
 
-/** The existing mascot drawing: breathes and leans slightly toward the cursor. */
+/** The mascot as a bust cut by its disc: breathes and leans slightly toward the cursor. */
 function Mascot() {
   const pointer = useMotionValue(0);
   const lean = useSpring(pointer, { stiffness: 50, damping: 16 });
-  const rotate = useTransform(lean, [-1, 1], [-3.5, 3.5]);
+  const rotate = useTransform(lean, [-1, 1], [-2.5, 2.5]);
   const x = useTransform(lean, [-1, 1], [-8, 8]);
-  const stageX = useTransform(lean, [-1, 1], [14, -14]);
+  const stageX = useTransform(lean, [-1, 1], [6, -6]);
 
   useEffect(() => {
     if (!matchMedia("(pointer: fine)").matches) return;
@@ -78,15 +78,14 @@ function Mascot() {
   }, [pointer]);
 
   return <div className="mascot">
-    <m.div className="mascot-stage" style={{ x: stageX }} aria-hidden="true">
-      <span className="mascot-disc" />
-    </m.div>
-    <span className="mascot-shadow" aria-hidden="true" />
-    <m.div className="mascot-lean" style={{ rotate, x }}>
-      <div className="mascot-breath">
-        <Image className="hero-mascot" src="/mascot/business.webp" alt="Маскот WADE со скрещёнными руками"
-          width={600} height={900} sizes="(max-width: 760px) 190px, 240px" priority />
-      </div>
+    <m.div className="mascot-stage" style={{ x: stageX }}>
+      <span className="mascot-disc" aria-hidden="true" />
+      <m.div className="mascot-lean" style={{ rotate, x }}>
+        <div className="mascot-breath">
+          <Image className="hero-mascot" src="/mascot/bust.webp" alt="Маскот WADE со скрещёнными руками"
+            width={600} height={480} sizes="(max-width: 760px) 487px, 608px" priority />
+        </div>
+      </m.div>
     </m.div>
   </div>;
 }

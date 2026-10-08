@@ -106,7 +106,7 @@ main, .footer { position: relative; z-index: 1; }
 
 /* Hero */
 /* The first screen fills the viewport below the header; nothing from the next section peeks in. */
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); grid-template-rows: 1fr auto; column-gap: 48px; align-items: center; min-height: calc(100svh - 69px); padding-top: clamp(32px, 6vh, 72px); }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 450px); grid-template-rows: 1fr auto; column-gap: 48px; align-items: center; min-height: calc(100svh - 69px); padding-top: clamp(32px, 6vh, 72px); }
 .hero-copy { padding-block: 24px 48px; }
 .hero h1 { margin: 0; font-size: clamp(40px, 5.8vw, 74px); font-weight: 700; line-height: .98; letter-spacing: -.035em; }
 .hero h1 .line-inner { animation: line-up 1.1s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 120ms); }
@@ -118,15 +118,14 @@ main, .footer { position: relative; z-index: 1; }
 .ghost-link > svg { transition: transform .5s var(--ease); }
 .ghost-link:hover > svg { transform: translateY(3px); }
 .hero-visual { display: flex; justify-content: center; min-width: 0; padding-bottom: 24px; }
-.mascot { position: relative; z-index: 2; width: min(250px, 74%); pointer-events: none; animation: mascot-in 1.3s var(--ease) .25s both; }
-.mascot-lean { transform-origin: 50% 92%; }
-.mascot-breath { transform-origin: 50% 92%; animation: breath 5s ease-in-out infinite; }
-.hero-mascot { display: block; width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: contain; }
-/* Flat burgundy disc the mascot stands inside; offset against his lean for depth. */
-.mascot-stage { position: absolute; z-index: -1; left: 50%; top: 46%; width: 150%; aspect-ratio: 1; translate: -50% -50%; }
-.mascot-disc { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #7b2c2e, var(--accent) 58%, #4a1719); box-shadow: var(--disc-shadow); animation: disc-in 1.4s var(--ease) .15s both; }
-/* Burgundy-tinted ground shadow so his feet sit on the disc instead of floating over it. */
-.mascot-shadow { position: absolute; left: 14%; right: 14%; bottom: 6%; height: 22px; border-radius: 50%; background: radial-gradient(closest-side, rgb(28 6 8 / .55), rgb(28 6 8 / 0)); animation: shadow-breath 5s ease-in-out infinite; }
+/* Head-and-shoulders bust (public/mascot/bust.webp, cut under the crossed arms) over the disc:
+   the box is as wide as the disc; the hat rises above the circle and the elbows dip just below it. */
+.mascot { position: relative; z-index: 2; width: min(420px, 100%); aspect-ratio: 1 / 1.159; pointer-events: none; animation: mascot-in 1.3s var(--ease) .25s both; }
+.mascot-stage { position: absolute; inset: 0; }
+.mascot-disc { position: absolute; left: -2%; right: -2%; top: 8.27%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #7b2c2e, var(--accent) 58%, #4a1719); box-shadow: var(--disc-shadow); animation: disc-in 1.4s var(--ease) .15s both; }
+.mascot-lean { position: absolute; left: -22.4%; top: 0; width: 144.8%; transform-origin: 50% 100%; }
+.mascot-breath { transform-origin: 50% 100%; animation: breath 5s ease-in-out infinite; }
+.hero-mascot { display: block; width: 100%; height: auto; aspect-ratio: 5 / 4; object-fit: contain; }
 /* One glass info strip under the hero: a solid burgundy experience block plus two short quotes. */
 .hero-notes { grid-column: 1 / -1; align-self: end; margin-bottom: clamp(24px, 4vh, 40px); display: grid; grid-template-columns: minmax(0, .55fr) minmax(0, 1fr) minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: color-mix(in srgb, var(--panel) 62%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: rise .9s var(--ease) .7s backwards; }
 .hero-note { position: relative; margin: 0; padding: 22px 26px; transition: background-color .5s var(--hover-ease); }
@@ -256,7 +255,6 @@ main, .footer { position: relative; z-index: 1; }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes mascot-in { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
 @keyframes breath { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.008, 1.018); } }
-@keyframes shadow-breath { 0%, 100% { transform: scaleX(1); opacity: 1; } 50% { transform: scaleX(.94); opacity: .8; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 @keyframes disc-in { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: none; } }
 @keyframes underline-run { 0% { transform: scaleX(1); transform-origin: right; } 50% { transform: scaleX(0); transform-origin: right; } 51% { transform-origin: left; } 100% { transform: scaleX(1); transform-origin: left; } }
@@ -264,8 +262,8 @@ main, .footer { position: relative; z-index: 1; }
 
 @media (max-width: 1023px) {
   .shell { width: calc(100% - 56px); }
-  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 280px); column-gap: 24px; }
-  .mascot { width: min(210px, 74%); }
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); column-gap: 24px; }
+  .mascot { width: min(353px, 100%); }
   .hero-note { padding-inline: 20px; }
   .featured-case { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; }
   .work-review { font-size: 17px; }
@@ -276,7 +274,7 @@ main, .footer { position: relative; z-index: 1; }
   .hero-copy { padding-block: 8px 24px; }
   .hero-visual { padding-block: 40px 48px; }
   .hero-summary { margin-top: 24px; }
-  .mascot { width: 200px; }
+  .mascot { width: min(336px, 100%); }
   .hero-notes { grid-template-columns: minmax(0, 1fr); }
   .hero-notes { grid-template-columns: minmax(0, 1fr); }
   .hero-note + .hero-note { border-left: 0; border-top: 1px solid var(--line); }
